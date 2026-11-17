@@ -1,11 +1,11 @@
-# //TODO: Project title (match your project topic)
+# Regressing video game playtime and genera to predict Steam video game revenue. 
 
 ## Authors
 
-- //TODO: Team member 1
-- //TODO: Team member 2
-- //TODO: Team member 3
-- //TODO: Team member 4 (delete this line for a team of three)
+- Howard Song
+- Milan Bertolutti
+- Yuanchen Ling	
+- Maryamalsadat Hosseini	
 
 ## Summary
 
@@ -14,25 +14,33 @@
 //TODO: - what you found, at a high level
 //TODO: - 1-2 sentences on what the findings might mean
 
+A Python project analyzing the [FronkonGames/steam-games-dataset](https://huggingface.co/datasets/FronkonGames/steam-games-dataset). We fit a linear regression model on price and genre to predict `estimated_owners`, which we use as a proxy for revenue.
+
+
+//TODO: What was found at a high level
+//TODO: 1-2 sentences on what our findings mean
+
+
 ## How to run the analysis
 
 These instructions work on both Windows and macOS.
 Run every command in a terminal, from the root of the repository unless a step says otherwise.
 //TODO: Name the terminal you tested on Windows (e.g., PowerShell or Git Bash).
+//TODO: After implementation
 
 ### Prerequisites
 
 Install the following before you start:
 
 - [Git](https://git-scm.com/downloads)
-- //TODO: [uv](https://docs.astral.sh/uv/getting-started/installation/) for Python, or R and renv for R
+- //TODO: [uv](https://docs.astral.sh/uv/getting-started/installation/) for Python
 - //TODO: [Quarto](https://quarto.org/docs/get-started/) (version //TODO)
 
 ### 1. Clone the repository
 
 ```bash
-git clone //TODO: repository URL
-cd //TODO: repository folder name
+git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-13-Repository
+cd DSCI-522-Group-13-Repository
 ```
 
 ### 2. Set up the computational environment
