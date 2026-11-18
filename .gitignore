@@ -1,2 +1,4 @@
 .DS_Store
 .venv/
+data/raw/*.parquet
+data/raw/*.part
