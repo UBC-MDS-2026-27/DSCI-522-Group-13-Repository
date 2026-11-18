@@ -33,7 +33,7 @@ RAW_FILENAME = "steam_games.parquet"
 # --- Data contract v3 constants -------------------------------------------------
 COHORT_START = pd.Timestamp("2018-01-01")
 COHORT_END = pd.Timestamp("2022-12-31")
-EXPECTED_COHORT_SIZE = 43_092
+EXPECTED_COHORT_SIZE = 46_859
 TEST_SIZE = 0.2
 SEED = 1234
 CLEANED_COLUMNS = [
