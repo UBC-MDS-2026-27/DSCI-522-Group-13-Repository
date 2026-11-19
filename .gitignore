@@ -5,3 +5,5 @@ data/raw/*.part
 
 /.quarto/
 **/*.quarto_ipynb
+
+analysis/videogames-regression_files

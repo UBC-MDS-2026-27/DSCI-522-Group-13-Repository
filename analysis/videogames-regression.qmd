@@ -4,7 +4,7 @@ author: "Howard Song, Milan Bertolutti, Yuanchen Ling, Maryamalsadat Hosseini"
 format:
   html:
     toc: true
-    code-fold: true
+    code-fold: show
 jupyter: python3
 ---
 
@@ -84,7 +84,98 @@ preprocessor = ColumnTransformer([
 ])
 ```
 
+## Model and evaluation
+
+We fit a linear regression, with the preprocessing and model combined in one pipeline. We compare it to a baseline that always predicts the mean.
+
+Both models are scored with 5-fold cross-validation on the training set. Because preprocessing is inside the pipeline, it is re-fit on each fold, so the validation data never influences it.
+
+Our main metric is RMSE on the `log1p` scale, which measures relative error so that a few very popular games do not dominate. We also report MAE and R².
+
+
+```{python}
+from sklearn.dummy import DummyRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import cross_validate
+from sklearn.pipeline import make_pipeline
+
+pipe = make_pipeline(preprocessor, LinearRegression())
+
+models = {
+    "Baseline (mean)": DummyRegressor(),
+    "Linear regression": pipe,
+}
+
+scoring = {
+    "RMSE": "neg_root_mean_squared_error",
+    "MAE": "neg_mean_absolute_error",
+    "R²": "r2",
+}
+
+cv_results = {}
+for name, model in models.items():
+    scores = cross_validate(model, X_train, y_train, cv=5, scoring=scoring)
+    cv_results[name] = {
+        "RMSE": -scores["test_RMSE"].mean(),
+        "MAE": -scores["test_MAE"].mean(),
+        "R²": scores["test_R²"].mean(),
+    }
+
+cv_results = pd.DataFrame(cv_results).T.round(3)
+
+```
+
 # Results
+
+## Model performance
+
+After cross-validation, we fit the linear regression on the full training set and scored it once on the test set.
+
+```{python}
+from sklearn.metrics import root_mean_squared_error, mean_absolute_error, r2_score
+
+pipe.fit(X_train, y_train)
+
+test = pd.read_csv("../data/processed/test.csv")
+X_test = test.drop(columns=["total_reviews"])
+y_test = np.log1p(test["total_reviews"])
+X_test["n_languages"] = X_test["n_languages"].clip(upper=10)
+X_test["release_day"] = (pd.to_datetime(X_test["release_date"]) - pd.Timestamp("2018-01-01")).dt.days
+
+y_pred = pipe.predict(X_test)
+
+test_results = pd.DataFrame({
+    "RMSE": [root_mean_squared_error(y_test, y_pred)],
+    "MAE": [mean_absolute_error(y_test, y_pred)],
+    "R²": [r2_score(y_test, y_pred)],
+}, index=["Linear regression"]).round(3)
+
+# Numbers quoted in the text below
+cv_base = cv_results.loc["Baseline (mean)"]
+cv_lr = cv_results.loc["Linear regression"]
+test_lr = test_results.loc["Linear regression"]
+error_factor = np.exp(test_lr["MAE"])  # MAE on the log scale -> multiplicative error
+```
+
+```{python}
+#| label: tbl-performance
+pd.concat(
+    {"Cross-validation": cv_results, "Test set": test_results},
+    names=["Evaluated on", "Model"],
+) + 0.0  # turns the baseline's rounded R² of -0.000 into 0.000
+```
+
+Linear regression beats the mean baseline on every metric (@tbl-performance). In cross-validation it lowers RMSE from `{python} f"{cv_base['RMSE']:.2f}"` to `{python} f"{cv_lr['RMSE']:.2f}"` and explains `{python} f"{cv_lr['R²']:.0%}"` of the variance in log reviews, while the baseline explains none. The improvements are their but the model only explains some of the variance. The features Price, number of languages, release day, genres and categories together account for about a third of the variation in how many reviews a game gets. This indicates that there are features out there that explain more of that variance that was not trained in the model. 
+
+The train test gap are very close together (RMSE `{python} f"{test_lr['RMSE']:.2f}"` vs `{python} f"{cv_lr['RMSE']:.2f}"`; R² `{python} f"{test_lr['R²']:.2f}"` vs `{python} f"{cv_lr['R²']:.2f}"`). This means the model is not overfitting and should perform about as well on other Steam games released in 2018 - 2022. In practical terms, the test MAE is `{python} f"{test_lr['MAE']:.2f}"` on the log scale. Because the model predicts $\log(1 + y)$, a gap of $d$ between the actual count $y$ and the predicted count $\hat{y}$ on the log scale is a ratio of $e^{d}$ on the original scale:
+
+$$
+\log(1 + y) - \log(1 + \hat{y}) = d
+\quad \Longleftrightarrow \quad
+\frac{1 + y}{1 + \hat{y}} = e^{d}
+$$
+
+Setting $d$ to the MAE gives $e^{\text{MAE}} \approx$ `{python} f"{error_factor:.1f}"`, so a typical prediction is off by a factor of about `{python} f"{error_factor:.1f}"` in either direction. For example, a game predicted to receive 100 reviews would typically end up with somewhere between `{python} round(100 / float(error_factor))` and `{python} round(100 * float(error_factor))`.
 
 # Discussion
 
