@@ -14,7 +14,7 @@
 //TODO: - what you found, at a high level
 //TODO: - 1-2 sentences on what the findings might mean
 
-A Python project analyzing the [FronkonGames/steam-games-dataset](https://huggingface.co/datasets/FronkonGames/steam-games-dataset). We fit a linear regression model on price and genre to predict `estimated_owners`, which we use as a proxy for revenue.
+A Python project analyzing the [FronkonGames/steam-games-dataset](https://huggingface.co/datasets/FronkonGames/steam-games-dataset). We fit a linear regression model on price, genre, category, language count and release date to predict `total_reviews`, which we use as a proxy for revenue.
 
 
 //TODO: What was found at a high level

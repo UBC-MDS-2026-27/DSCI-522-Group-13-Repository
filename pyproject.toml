@@ -1,1 +1,15 @@
+[project]
+name = "dsci-522-group-13"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "click>=8.5.1",
+    "pandas>=3.1.1",
+    "pyarrow>=26.0.1",
+    "scikit-learn>=1.9.1",
+]
 
+[dependency-groups]
+dev = [
+    "black>=26.10.1",
+]
