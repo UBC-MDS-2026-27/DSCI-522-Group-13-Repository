@@ -21,9 +21,9 @@ import click
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-# Pin REVISION to a commit SHA from the dataset's "History" tab on Hugging Face
+# Pinned to a commit SHA from the dataset's "History" tab on Hugging Face
 # so every run downloads the same bytes. "main" changes whenever the author updates the data.
-REVISION = "main"
+REVISION = "6c21457b9ebf0a6a7f5b91e11281d65d456ea30e"
 DATA_URL = (
     "https://huggingface.co/datasets/FronkonGames/steam-games-dataset/"
     f"resolve/{REVISION}/data/train-00000-of-00001.parquet"
@@ -59,7 +59,6 @@ RAW_COLUMNS_NEEDED = [
     "positive",
     "negative",
 ]
-
 
 def download_data(url: str, dest: Path, force: bool = False) -> Path:
     """Download `url` to `dest`, skipping the download if `dest` already exists.
