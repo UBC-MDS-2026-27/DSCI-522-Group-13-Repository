@@ -2,3 +2,6 @@
 .venv/
 data/raw/*.parquet
 data/raw/*.part
+
+/.quarto/
+**/*.quarto_ipynb
