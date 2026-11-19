@@ -1,0 +1,45 @@
+---
+title: "Steam Games Analysis"
+author: "Howard Song, Milan Bertolutti, Yuanchen Ling, Maryamalsadat Hosseini"
+format:
+  html:
+    toc: true
+    code-fold: true
+jupyter: python3
+---
+
+# Introduction
+The video game industry has become a major part of the digital entertainment market, with online platforms such as Steam providing developers and publishers access to a global audience. In addition to purchasing and playing games, Steam users can share their experiences and recommend games through reviews (Valve, n.d.). These reviews provide information about player opinions and offer a measurable indicator of audience engagement.
+
+Understanding the factors associated with review volume is important for developers and publishers because reviews can provide insights into player experiences and engagement. Previous research has examined how reviews relate to video game usage and how player engagement modes influence review characteristics (Philp & Nepomuceno, 2024; Guzsvinecz & Szűcs, 2026). In particular, pricing, game genres, available features, and estimated ownership may be associated with differences in the number of reviews received by games. Understanding these relationships could help inform decisions about game positioning and market strategies.
+
+This study investigates the following research question: How well can game price, genres, categories, and estimated owners predict the total number of reviews received by Steam games released between 2018 and 2022?
+
+The analysis uses the Steam Games Dataset published by FronkonGames on Hugging Face (FronkonGames, n.d.). Each row represents an individual Steam game. The dataset includes information such as release date, price, genres, categories, estimated owners, and positive and negative review counts. The study focuses on 43,092 games released between 2018 and 2022. The response variable, total reviews, is calculated by adding the positive and negative review counts. The explanatory variables are price, genres, categories, and estimated owners. These variables provide the information needed to investigate the research question using regression analysis.
+
+In this study, the analysis aims to identify predictive relationships rather than establish causation.
+
+# Methods
+
+
+# Results
+
+# Discussion
+
+## Real-world implications
+The findings provide insights into how selected game characteristics are related to review volume on Steam. For game developers and publishers, understanding these relationships may help them identify characteristics associated with greater audience engagement. However, these relationships should not be interpreted as evidence that a particular characteristic directly causes an increase in reviews.
+
+## Limitations
+This study has several limitations. First, estimated ownership is provided as a range rather than an exact number, which may reduce measurement precision. Second, the analysis focuses on four selected predictors and does not account for other factors that may influence review volume, such as marketing activities, game quality, and release timing. The dataset also lacks detailed information about marketing budgets, external advertising reach, and launch strategies, which may affect a game's visibility and the number of reviews it receives. Furthermore, games released in different years have had varying amounts of time to accumulate reviews, which may affect comparisons of review volume.
+
+## Future directions
+Future research could investigate additional factors that may influence review volume, such as game ratings, marketing activities, and developer reputation. Researchers could also examine whether the relationships between game characteristics and review counts differ across release years. Finally, comparing linear regression with alternative predictive models could help determine whether more complex methods provide better predictions of Steam game review counts.
+
+# References
+FronkonGames. (n.d.). Steam Games Dataset. Hugging Face. https://doi.org/10.57967/hf/0511
+
+Guzsvinecz, T., & Szűcs, J. (2026). Emotions in play: A length and sentiment analysis of Steam reviews by player engagement mode. Heliyon, 12, e45258. https://doi.org/10.1016/j.heliyon.2026.e45258
+
+Philp, M., & Nepomuceno, M. V. (2024). How reviews influence product usage post-purchase: An examination of video game playtime. Journal of Business Research, 172, 114456. https://doi.org/10.1016/j.jbusres.2023.114456
+
+Valve. (n.d.). User reviews. Steamworks Documentation. https://partner.steamgames.com/doc/store/reviews
