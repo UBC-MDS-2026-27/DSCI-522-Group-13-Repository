@@ -21,6 +21,68 @@ In this study, the analysis aims to identify predictive relationships rather tha
 
 # Methods
 
+## Data
+
+We used the cleaned and pre-split data produced by `scripts/process_data.py`: 46,859 Steam games released between 2018 and 2022, randomly split 80/20 into training and test sets (seed 1234). Only the training set is used for model building and selection; the test set is used once, at the end, to report final performance.
+
+```{python}
+import pandas as pd
+
+train = pd.read_csv("../data/processed/train.csv")
+train.shape
+```
+
+## Target variable
+
+<!-- TODO: justify the log1p transform using Cary's EDA (skew + zero reviews, #40 figure) -->
+
+We predict `log1p(total_reviews)`, the log of reviews + 1. Logrthmicly transforming prevents the few very popular games from dominating the model. Adding 1 to the value keeps games with zero reviews defined.
+
+```{python}
+import numpy as np
+
+X_train = train.drop(columns=["total_reviews"])
+y_train = np.log1p(train["total_reviews"])
+```
+
+## Features
+
+We used five groups of features, all built from the training data:
+
+- **Price** in USD, used as is.
+- **Number of supported languages**, capped at 10, since adding languages beyond that point makes little further difference.
+- **Release day**: days since 1 January 2018, so the model can pick up trends over the 2018–2022 period.
+- **Genres** and **categories**: one yes/no column per genre and per Steam category. Only levels that appear in at least 1% of training games are kept, so rare labels do not add noise. `Steam Trading Cards` is excluded because Valve grants it to games that already sell well, making it a consequence of popularity rather than a cause.
+
+`appID` and `name` are identifiers and are not used as features.
+
+### Transformation
+```{python}
+# Transform the data to fit contract. Clip number of languages to a max of 10, and calculate release day.
+X_train["n_languages"] = X_train["n_languages"].clip(upper=10)
+X_train["release_day"] = (pd.to_datetime(X_train["release_date"]) - pd.Timestamp("2018-01-01")).dt.days
+```
+
+### Preprocessing
+```{python}
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.preprocessing import StandardScaler
+
+list_encoder = CountVectorizer(
+    token_pattern=r'"([^"]+)"', # This keeps multi word labels
+    lowercase=False,
+    binary=True,
+    min_df=0.01,
+    stop_words=["Steam Trading Cards"],
+)
+
+preprocessor = ColumnTransformer([
+    ("numeric", StandardScaler(), ["price", "n_languages", "release_day"]),
+    ("genre", list_encoder, "genres"),
+    ("category", list_encoder, "categories"),
+])
+```
 
 # Results
 
