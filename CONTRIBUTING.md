@@ -1,105 +1,85 @@
-# Contributing Guidelines
+# Contributing to the DSCI 522 Group 13 Project
 
-Thank you for your interest in contributing to our project! We welcome suggestions, bug reports, documentation improvements, and code contributions.
+Thank you for contributing to our DSCI 522 Group 13 project! This project analyzes Steam video game data to explore relationships between game features and outcomes.
 
-## 1. Reporting Bugs
+## Fixing Typos
 
-If you find a bug or an issue with our project, please open a GitHub Issue.
+Small spelling or grammatical errors in documentation can be fixed using GitHub. Please modify the original source files, such as `.md` or `.qmd`, rather than rendered HTML or PDF files.
 
-When reporting a bug, please include:
+## Reporting Bugs and Suggesting Improvements
 
-- A clear description of the problem.
-- Steps to reproduce the issue.
-- The expected and actual behavior.
-- Any relevant error messages or screenshots.
+Before making substantial changes, create a GitHub Issue to describe the problem or proposed improvement.
 
-Before opening a new issue, please check existing issues to avoid duplicates.
+When reporting a bug, include:
 
-## 2. Suggesting Improvements
+- A clear description of the issue.
+- Steps to reproduce the problem.
+- Expected and actual results.
+- Relevant error messages or screenshots.
 
-We welcome ideas for improving the project, including code quality, data processing, visualizations, and documentation.
+Check existing issues before opening a new one.
 
-To suggest an improvement:
+## Setting Up the Project
 
-1. Check whether a similar suggestion already exists.
-2. Open a new GitHub Issue.
-3. Describe your proposed improvement and explain why it would be useful.
-4. Discuss the suggestion with the project team before implementing major changes.
+Clone the repository:
 
-## 3. Contributing Code
+```bash
+git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-13-Repository.git
+cd DSCI-522-Group-13-Repository
+```
 
-Please follow the GitHub Flow workflow when contributing:
+Install the project dependencies using `uv`:
 
-1. Clone the repository to your local machine.
-2. Create a new branch from the latest `main` branch.
-3. Give your branch a descriptive name, such as `add-eda-plot` or `fix-data-cleaning`.
-4. Make your changes and test them locally.
-5. Commit your changes with meaningful commit messages.
-6. Push your branch to GitHub.
-7. Open a Pull Request describing your changes.
-8. Request a review from at least one team member.
-9. Address any feedback before the Pull Request is merged.
+```bash
+uv sync
+```
 
-Please do not push changes directly to the `main` branch.
+Use the project's existing `pyproject.toml` and `uv.lock` to maintain a reproducible environment.
 
-## 4. Coding and Documentation Standards
+If additional packages are required, use `uv add <package>` and commit the updated dependency files.
 
-To keep the project consistent and reproducible:
+## Data and Reproducibility
 
-- Write readable and well-organized Python or R code.
-- Use meaningful variable and function names.
-- Include comments when necessary.
-- Keep project dependencies updated.
-- Document important changes.
-- Make sure the Quarto report renders successfully.
-- Follow the existing project directory structure.
+- Store downloaded raw data in `data/raw/`.
+- Store cleaned datasets in `data/processed/`.
+- Use the agreed 2018–2022 cohort and document any filtering decisions.
+- Use an 80/20 train-test split with random seed 1234.
+- Fit preprocessing transformations only on the training data to prevent data leakage.
+- Document the steps needed to reproduce the analysis.
+- Avoid committing large data files that exceed GitHub's file-size limits.
 
-## 5. Generative AI Usage Policy
+## Pull Request Process
 
-We allow responsible use of generative AI tools such as ChatGPT, GitHub Copilot, and Claude to support project development.
+1. Create a new branch from an up-to-date `main` branch.
+2. Use a short, descriptive branch name, such as `add-eda-plot` or `fix-data-cleaning`.
+3. Make changes and commit them with meaningful commit messages.
+4. Push your branch to GitHub and open a Pull Request into `main`.
+5. Describe your changes and link any relevant GitHub Issues.
+6. Request a review from at least one teammate before merging.
+7. The reviewer should merge the PR after approval. Contributors should not push directly to `main`.
 
-### Permitted Uses
+Keep each PR focused on one task to make reviewing easier.
 
-AI tools may be used for:
+Python code should follow the PEP 8 style guide.
 
-- Explaining programming concepts.
-- Debugging and suggesting code improvements.
-- Improving grammar and documentation clarity.
-- Suggesting approaches to data analysis.
-- Reviewing code before submitting a Pull Request.
+## AI Usage Policy
 
-### Disclosure Requirements
+AI tools, including ChatGPT and GitHub Copilot, may be used to assist with debugging, documentation, code explanations, and brainstorming.
 
-Contributors must disclose any significant use of generative AI in their contributions. This includes identifying the AI tool used, explaining how it was used, and providing representative prompts when relevant.
+Contributors must:
 
-### Contributor Responsibilities
+- Understand and verify any AI-generated code or text before submitting it.
+- Test AI-assisted code and ensure it works correctly.
+- Disclose substantial AI assistance in the relevant PR or documentation.
+- Follow UBC MDS academic integrity guidelines.
+- Ensure all contributions are reviewed by a human team member before merging.
 
-- Contributors are responsible for understanding, reviewing, and testing all AI-assisted code and documentation.
-- AI-generated content must be checked for accuracy and correctness.
-- AI-generated references must be independently verified.
-- Contributors must follow the course's academic integrity requirements.
-- GitHub Issues and Pull Requests must be created by human contributors, not AI agents.
-- Pull Requests must be reviewed and merged by human team members, not AI agents.
+Contributors remain responsible for the accuracy and quality of their work.
 
-The use of AI does not replace individual responsibility for the quality and correctness of contributions.
+## Code of Conduct
 
-## 6. Code Review
+All contributors are expected to follow the project's `CODE_OF_CONDUCT.md` and communicate respectfully with teammates.
 
-All Pull Requests must be reviewed by at least one other team member before merging.
+## Attribution
 
-Reviewers should check:
-
-- Code correctness and readability.
-- Documentation quality.
-- Reproducibility.
-- Consistency with the project's objectives.
-
-Contributors should respond constructively to feedback and make necessary revisions.
-
-## 7. Communication
-
-We use GitHub Issues to coordinate project tasks, discuss improvements, and track progress.
-
-Please communicate respectfully, provide constructive feedback, and follow the project's `CODE_OF_CONDUCT.md`.
-
-Thank you for helping improve our project!
+These guidelines were adapted from the UBC MDS Breast Cancer Predictor contributing guidelines and adjusted for our DSCI 522 Group 13 project.
