@@ -11,7 +11,7 @@ jupyter: python3
 
 # Summary
 
-This project investigates how well game characteristics can predict the total number of reviews received by Steam games released between 2018 and 2022. Using the Steam Games Dataset, we explore relationships between review counts and game features, including price, genres, categories, and estimated ownership.
+This project investigates how well game characteristics can predict the total number of reviews received by Steam games released between 2018 and 2022. Using the Steam Games Dataset, we explore relationships between review counts and game features, including price, genres, categories, number of supported languages, and release date.
 
 We conduct exploratory data analysis to examine review distributions and feature relationships, followed by regression modeling to evaluate predictive performance.
 
@@ -78,6 +78,7 @@ The distribution of total reviews is highly right-skewed. Most games receive rel
 ![Median total reviews by the number of supported languages. The sample size of each group is displayed above the corresponding bar.](figures/reviews_by_languages.png){#fig-language-reviews}
 
 Games supporting more languages tend to have higher median review counts. This suggests a positive association between language availability and review volume. However, this relationship is descriptive and does not establish causality.
+
 # Discussion
 
 ## Real-world implications
