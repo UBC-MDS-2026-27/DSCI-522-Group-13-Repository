@@ -90,4 +90,4 @@ Example prompts:
 
 ## Rendered report
 
-//TODO: Link to the rendered report (e.g., your GitHub Pages URL).
+[View the rendered report](https://ubc-mds-2026-27.github.io/DSCI-522-Group-13-Repository/)
