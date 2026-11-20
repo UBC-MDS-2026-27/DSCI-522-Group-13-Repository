@@ -23,7 +23,21 @@ In this study, the analysis aims to identify predictive relationships rather tha
 
 
 # Results
+## Exploratory Data Analysis
 
+The exploratory data analysis was conducted using only the training dataset to avoid data leakage.
+
+### Distribution of Total Reviews
+
+![Distribution of log-transformed total reviews among Steam games in the training dataset. The log(1 + total reviews) transformation accounts for games with zero reviews and reduces the influence of extreme values.](figures/review_distribution.png){#fig-review-distribution}
+
+The distribution of total reviews is highly right-skewed. Most games receive relatively few reviews, while a small number of games receive substantially more. Applying the log transformation makes the distribution easier to visualize while retaining games with zero reviews.
+
+### Supported Languages and Review Counts
+
+![Median total reviews by the number of supported languages. The sample size of each group is displayed above the corresponding bar.](figures/reviews_by_languages.png){#fig-language-reviews}
+
+Games supporting more languages tend to have higher median review counts. This suggests a positive association between language availability and review volume. However, this relationship is descriptive and does not establish causality.
 # Discussion
 
 ## Real-world implications
