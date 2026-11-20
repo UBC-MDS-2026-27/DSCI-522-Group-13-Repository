@@ -90,4 +90,4 @@ Example prompts:
 
 ## Rendered report
 
-[View the rendered report](https://ubc-mds-2026-27.github.io/DSCI-522-Group-13-Repository/)
+https://ubc-mds-2026-27.github.io/DSCI-522-Group-13-Repository/
