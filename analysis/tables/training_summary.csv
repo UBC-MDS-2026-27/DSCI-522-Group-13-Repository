@@ -1,0 +1,4 @@
+Variable,N,Mean,SD,Min,Q1,Median,Q3,Max
+Price (USD),37487.0,4.58,12.6,0.0,0.59,1.99,4.99,999.0
+Supported languages (count),37487.0,4.54,11.68,0.0,1.0,1.0,3.0,103.0
+Total reviews (count),37487.0,1158.54,17109.06,0.0,2.0,14.0,61.0,1227784.0

@@ -25,6 +25,36 @@ In this study, the analysis aims to identify predictive relationships rather tha
 # Results
 ## Exploratory Data Analysis
 
+### Summary Statistics
+
+The training dataset contains 37,487 Steam games.
+Descriptive statistics for the numerical variables
+are presented in @tbl-training-summary.
+
+```{python}
+#| label: tbl-training-summary
+#| tbl-cap: "Descriptive statistics of the training dataset"
+#| echo: false
+
+import pandas as pd
+
+summary = pd.read_csv(
+    "tables/training_summary.csv"
+)
+
+from IPython.display import display
+
+display(
+    summary.round(2)
+)
+```
+
+The mean number of reviews (1,158.54) is substantially
+higher than the median (14), indicating a strongly
+right-skewed distribution.
+This motivates the log transformation used in the
+exploratory visualization.
+
 The exploratory data analysis was conducted using only the training dataset to avoid data leakage.
 
 ### Distribution of Total Reviews
