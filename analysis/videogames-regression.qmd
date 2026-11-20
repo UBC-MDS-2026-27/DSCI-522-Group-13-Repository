@@ -136,6 +136,7 @@ from sklearn.metrics import root_mean_squared_error, mean_absolute_error, r2_sco
 
 pipe.fit(X_train, y_train)
 
+# Read and transform test data in same way as training data was
 test = pd.read_csv("../data/processed/test.csv")
 X_test = test.drop(columns=["total_reviews"])
 y_test = np.log1p(test["total_reviews"])
@@ -176,6 +177,121 @@ $$
 $$
 
 Setting $d$ to the MAE gives $e^{\text{MAE}} \approx$ `{python} f"{error_factor:.1f}"`, so a typical prediction is off by a factor of about `{python} f"{error_factor:.1f}"` in either direction. For example, a game predicted to receive 100 reviews would typically end up with somewhere between `{python} round(100 / float(error_factor))` and `{python} round(100 * float(error_factor))`.
+
+## Prediction accuracy by game popularity
+
+### Visualization Code:
+```{python}
+#| code-fold: true
+import altair as alt
+
+# > Citation Claude Opus 5.5 was used for this visualization
+
+# Group test games by their actual number of reviews.
+# Groups are about half a power of ten wide, so they are evenly spaced on a log scale.
+edges = [-1, 0, 3, 10, 30, 100, 300, 1000, 3000, np.inf]
+review_group = pd.cut(
+    test["total_reviews"],
+    bins=edges,
+    labels=["0", "1–3", "4–10", "11–30", "31–100", "101–300", "301–1,000", "1,001–3,000", "3,001+"],
+)
+
+predictions = pd.DataFrame({
+    "group": review_group,
+    "actual": test["total_reviews"],
+    "predicted": np.expm1(y_pred),  # back to review counts
+})
+
+group_summary = predictions.groupby("group", observed=True).agg(
+    games=("actual", "size"),
+    actual=("actual", "median"),
+    predicted=("predicted", "median"),
+    predicted_low=("predicted", lambda p: p.quantile(0.25)),
+    predicted_high=("predicted", lambda p: p.quantile(0.75)),
+)
+
+# Numbers quoted in the text below
+lowest = group_summary.iloc[0]
+highest = group_summary.iloc[-1]
+
+#| code-fold: true
+alt.data_transformers.disable_max_rows()  # plot every test game (Altair's default limit is 5,000 rows)
+
+# One shared scale for every review axis, so the two panels line up.
+# symlog's default ticks bunch at the top, so place them at powers of ten.
+max_reviews = predictions[["actual", "predicted"]].max().max()
+scale = alt.Scale(type="symlog", domain=[0, max_reviews])
+axis = alt.Axis(values=[0, 1, 10, 100, 1_000, 10_000, 100_000, 1_000_000],
+                labelExpr="format(datum.value, ',')")
+
+# (A) Every game, with the perfect-prediction line and the group boundaries
+scatter = alt.Chart(predictions[["actual", "predicted"]]).mark_circle(
+    size=8, opacity=0.15, color="#1f77b4"
+).encode(
+    x=alt.X("actual", scale=scale, axis=axis, title="Actual reviews"),
+    y=alt.Y("predicted", scale=scale, axis=axis, title="Predicted reviews"),
+)
+perfect = alt.Chart(pd.DataFrame({"reviews": [0, max_reviews]})).mark_line(
+    color="black", strokeDash=[4, 4]
+).encode(
+    x=alt.X("reviews", scale=scale),
+    y=alt.Y("reviews", scale=scale),
+)
+boundaries = alt.Chart(pd.DataFrame({"edge": [e + 0.5 for e in edges[1:-1]]})).mark_rule(
+    color="grey", opacity=0.4
+).encode(x=alt.X("edge", scale=scale))
+
+panel_a = (boundaries + scatter + perfect).properties(
+    width=300, height=300, title="A. Every test game"
+)
+
+# (B) Group medians, with the middle 50% of predictions
+summary = group_summary.reset_index()
+summary["group"] = summary["group"].astype(str)
+medians = summary.melt(
+    id_vars=["group", "games"], value_vars=["actual", "predicted"],
+    var_name="type", value_name="reviews",
+)
+medians["type"] = medians["type"].str.capitalize()
+
+x_group = alt.X("group", sort=None, title="Actual reviews (grouped)", axis=alt.Axis(labelAngle=-45))
+spread = alt.Chart(summary).mark_rule(strokeWidth=3, opacity=0.4, color="#1f77b4").encode(
+    x=x_group,
+    y=alt.Y("predicted_low", scale=scale, axis=axis, title="Number of reviews"),
+    y2="predicted_high",
+)
+dots = alt.Chart(medians).mark_point(filled=True, size=60, opacity=1).encode(
+    x=x_group,
+    y=alt.Y("reviews", scale=scale, axis=axis),
+    color=alt.Color("type", title=None,
+                    scale=alt.Scale(domain=["Actual", "Predicted"], range=["black", "#1f77b4"])),
+    tooltip=[
+        "group", "type",
+        alt.Tooltip("reviews", format=",.0f", title="Median reviews"),
+        alt.Tooltip("games", format=",", title="Games in group"),
+    ],
+)
+
+panel_b = (spread + dots).properties(width=300, height=300, title="B. Grouped by actual reviews")
+
+fig_groups = (panel_a | panel_b).resolve_scale(y="shared")
+```
+
+```{python}
+fig_groups
+```
+
+The figure above compares predicted and actual review counts for the `{python} f"{len(test):,}"` test games in two ways. Panel A plots every game. If the model were perfect, every point would sit on the dashed line. The cloud is clearly flatter than the line, but it is hard to read beyond that. With this many games the points overlap heavily. Review counts are also whole numbers, so games with few reviews pile up in vertical stripes at 0, 1, 2 and so on. From panel A alone it is hard to tell where most games lie or what a typical prediction looks like at a given level of popularity.
+
+Panel B summarises the same games. It splits them into nine groups by actual review count (the grey lines in panel A) and shows the median actual and median predicted count in each group, along with the middle 50% of predictions. Grouping has three advantages here:
+
+- **No overplotting.** Each group is reduced to a few marks, so nothing is hidden behind other points.
+- **Equal weight for small groups.** The few hundred very popular games get as much space as the thousands of small ones, instead of being lost in a corner of the cloud.
+- **Robust summaries.** Medians are not pulled around by a handful of extreme games, and each group still holds between `{python} f"{group_summary['games'].min():,}"` and `{python} f"{group_summary['games'].max():,}"` games, so the medians are stable.
+
+Panel B shows that the model's predictions are pulled toward the middle. Across the nine groups the median actual review count ranges from `{python} f"{lowest['actual']:,.0f}"` to `{python} f"{highest['actual']:,.0f}"`, but the median prediction only ranges from `{python} f"{lowest['predicted']:,.0f}"` to `{python} f"{highest['predicted']:,.0f}"`. As a result the model over-predicts games with few or no reviews and under-predicts popular ones. Games with more than 3,000 reviews are predicted to get about `{python} f"{highest['actual'] / highest['predicted']:.0f}"` times fewer reviews than they actually received.
+
+This pattern is expected from a model that explains only about a third of the variance. Price, languages, genres and categories can separate a polished game from a bare-bones one, but they cannot tell a hit from an ordinary well-made game. The factors behind a breakout hit, such as marketing, quality and word of mouth, are not in the data. The model is therefore more useful for comparing games roughly than for predicting the review count of any single game, especially a very popular one.
 
 # Discussion
 
