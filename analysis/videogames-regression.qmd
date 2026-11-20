@@ -181,6 +181,7 @@ Setting $d$ to the MAE gives $e^{\text{MAE}} \approx$ `{python} f"{error_factor:
 ## Prediction accuracy by game popularity
 
 ### Visualization Code:
+
 ```{python}
 #| code-fold: true
 import altair as alt
@@ -292,6 +293,12 @@ Panel B summarises the same games. It splits them into nine groups by actual rev
 Panel B shows that the model's predictions are pulled toward the middle. Across the nine groups the median actual review count ranges from `{python} f"{lowest['actual']:,.0f}"` to `{python} f"{highest['actual']:,.0f}"`, but the median prediction only ranges from `{python} f"{lowest['predicted']:,.0f}"` to `{python} f"{highest['predicted']:,.0f}"`. As a result the model over-predicts games with few or no reviews and under-predicts popular ones. Games with more than 3,000 reviews are predicted to get about `{python} f"{highest['actual'] / highest['predicted']:.0f}"` times fewer reviews than they actually received.
 
 This pattern is expected from a model that explains only about a third of the variance. Price, languages, genres and categories can separate a polished game from a bare-bones one, but they cannot tell a hit from an ordinary well-made game. The factors behind a breakout hit, such as marketing, quality and word of mouth, are not in the data. The model is therefore more useful for comparing games roughly than for predicting the review count of any single game, especially a very popular one.
+
+## Limitations
+
+Our model struggles at both ends of the number of reviews distribution. A large portion of games in the training set have no reviews at all, and a linear model on log1p(total_reviews) treats these as low values rather than a separate group. It therefore cannot predict exactly zero. 
+
+As shown in Panel B of the visualization, predictions are pulled toward the middle: the model over-predicts games with few or no reviews and under-predicts the most popular games. A model built to inflate zero counts so in order to eliminate this issue the selection of another model would likely be the course of action.
 
 # Discussion
 
