@@ -2,7 +2,10 @@
 title: "Steam Games Analysis"
 author: "Howard Song, Milan Bertolutti, Yuanchen Ling, Maryamalsadat Hosseini"
 format:
-  pdf: default
+  pdf:
+    include-in-header:
+      text: |
+        \usepackage{multirow}
   html:
     toc: true
     code-fold: show
