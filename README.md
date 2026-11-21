@@ -1,4 +1,4 @@
-# Regressing video game playtime and genera to predict Steam video game revenue. 
+# Regressing video game characteristics to predict Steam video game review counts
 
 ## Authors
 
@@ -12,12 +12,12 @@
 
 How well do game characteristics predict the total number of reviews for Steam games released 2018–2022? 
 
-We aimed to solve this question using the [FronkonGames steam games dataset](https://huggingface.co/datasets/FronkonGames/steam-games-dataset) to train a linear regression model using the features price, genre, category, language count and release date, compared against a mean baseline. Our trained model explains about one-third of the variance in log review counts on the test set and beats the mean baseline. This shows that game metadata carries useful predictive signal for developers/publishers, but it is predictive, not causal. Some limitations of our models are it is less accurate at very low and very high review counts. Features such as marketing, developer reputation, and community engagement are taken into account within our mode.
+We aimed to answer this question using the [FronkonGames steam games dataset](https://huggingface.co/datasets/FronkonGames/steam-games-dataset) to train a linear regression model using the features price, genre, category, language count and release date, compared against a mean baseline. Our trained model explains about one-third of the variance in log review counts on the test set and beats the mean baseline. This shows that game metadata carries useful predictive signal for developers/publishers, but it is predictive, not causal. One limitation of our model is that it is less accurate at very low and very high review counts. Features such as marketing, developer reputation, and community engagement are not taken into account within our model.
 
 
 ## How to run the analysis
 
-These instructions work on both Windows (PowerShell) and macOS.
+These instructions were tested on macOS.
 Run every command from the root of the repository.
 
 ### Prerequisites
@@ -95,8 +95,8 @@ Instruction files: none are committed to this repository.
 Example prompts:
 
 - Verify the model training pipeline I have written for any issues. Does it align with the outlined question and data contract?
-- Verify that my implementation of a logp1() and other transformation is correct here.
-- I am having some trouble formatting this expression into Latex, correct the equation.
+- Verify that my implementation of a log1p() and other transformation is correct here.
+- I am having some trouble formatting this expression into LaTeX, correct the equation.
 
 ## Rendered report
 
