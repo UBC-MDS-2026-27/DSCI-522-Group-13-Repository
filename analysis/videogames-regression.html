@@ -2392,12 +2392,14 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#visualization-code" id="toc-visualization-code" class="nav-link" data-scroll-target="#visualization-code">Visualization Code:</a></li>
   </ul></li>
-  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
   </ul></li>
   <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a>
   <ul class="collapse">
+  <li><a href="#summary-of-findings-and-link-to-research-question" id="toc-summary-of-findings-and-link-to-research-question" class="nav-link" data-scroll-target="#summary-of-findings-and-link-to-research-question">Summary of Findings and Link to Research Question</a></li>
   <li><a href="#real-world-implications" id="toc-real-world-implications" class="nav-link" data-scroll-target="#real-world-implications">Real-world implications</a></li>
-  <li><a href="#limitations-1" id="toc-limitations-1" class="nav-link" data-scroll-target="#limitations-1">Limitations</a></li>
+  <li><a href="#alignment-with-expectations" id="toc-alignment-with-expectations" class="nav-link" data-scroll-target="#alignment-with-expectations">Alignment with Expectations</a></li>
+  <li><a href="#assumptions-and-limitations" id="toc-assumptions-and-limitations" class="nav-link" data-scroll-target="#assumptions-and-limitations">Assumptions and Limitations</a></li>
+  <li><a href="#potential-impact" id="toc-potential-impact" class="nav-link" data-scroll-target="#potential-impact">Potential Impact</a></li>
   <li><a href="#future-directions" id="toc-future-directions" class="nav-link" data-scroll-target="#future-directions">Future directions</a></li>
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
@@ -2433,14 +2435,12 @@ window.Quarto = {
 
 <section id="summary" class="level1">
 <h1>Summary</h1>
-<p>This project investigates how well game characteristics can predict the total number of reviews received by Steam games released between 2018 and 2022. Using the Steam Games Dataset, we explore relationships between review counts and game features, including price, genres, categories, number of supported languages, and release date.</p>
-<p>We conduct exploratory data analysis to examine review distributions and feature relationships, followed by regression modeling to evaluate predictive performance.</p>
-<p>The goal is to better understand which game characteristics are associated with player engagement, using review counts as a measurable indicator.</p>
+<p>This project investigates how well game characteristics can predict the total number of reviews received by Steam games released between 2018 and 2022. Using the Steam Games Dataset, we explore relationships between review counts and game features, including price, genres, categories, number of supported languages, and release date. We conduct exploratory data analysis to examine review distributions and feature relationships, followed by regression modeling to evaluate predictive performance. The results show that our linear regression model explains approximately one-third of the variation in log review counts on the test set and performs better than the mean baseline in cross-validation. These findings suggest that game characteristics provide useful predictive information and may help developers and publishers better understand patterns in review activity. However, the model is less accurate for games with very few or very high review counts, and other factors, such as marketing activities, developer reputation, and community engagement, are not included in the model.</p>
 </section>
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
 <p>The video game industry has become a major part of the digital entertainment market, with online platforms such as Steam providing developers and publishers access to a global audience. In addition to purchasing and playing games, Steam users can share their experiences and recommend games through reviews (Valve, n.d.). These reviews provide insights into player opinions and serve as a measurable indicator of audience engagement.</p>
-<p>Understanding the factors associated with review volume is important for game developers and publishers because reviews can provide insights into player engagement and a game’s visibility among potential players. Previous research has examined the relationship between online reviews and video game usage, as well as how different player engagement modes influence review characteristics (Philp &amp; Nepomuceno, 2024; Guzsvinecz &amp; Szűcs, 2026). Research on the Steam platform has also investigated game reviews and their relationship with game characteristics (Lin et al., 2019). Characteristics such as price, genres, available features, language support, and release timing may be associated with differences in the number of reviews received. Examining these relationships may help developers and publishers better understand which game characteristics are associated with greater audience engagement.</p>
+<p>Understanding the factors associated with review volume is important for game developers and publishers because reviews can provide insights into player engagement and a game’s visibility among potential players. Previous research has examined the relationship between online reviews and video game usage (Philp &amp; Nepomuceno, 2024), as well as how different player engagement modes influence review characteristics (Guzsvinecz &amp; Szűcs, 2026). Research on the Steam platform has also investigated game reviews and their relationship with game characteristics (Lin et al., 2019). These studies provide relevant background for understanding review activity in video games. However, examining how selected game characteristics can be used to predict the total number of reviews remains the focus of our study. Characteristics such as price, genres, available features, language support, and release timing may be associated with differences in the number of reviews received. Examining these relationships may help developers and publishers better understand which game characteristics are associated with greater audience engagement.</p>
 <p>This study investigates the following research question: How well can selected game characteristics predict the total number of reviews received by Steam games released between 2018 and 2022? Specifically, the analysis examines five groups of explanatory variables: game price, number of supported languages, release date, genres, and Steam categories. Total review count, calculated by adding positive and negative reviews, is used as the response variable.</p>
 <p>The analysis uses the Steam Games Dataset published by FronkonGames on Hugging Face (FronkonGames, n.d.). Each row represents an individual Steam game, with information including release date, price, genres, categories, language support, and positive and negative review counts. The study focuses on 46,859 games released between 2018 and 2022. The dataset is randomly divided into training and test sets, with 80% of the data used for exploratory data analysis and model development and the remaining 20% reserved for final model evaluation.</p>
 <p>To investigate the research question, we first conduct exploratory data analysis to examine the distribution of review counts and explore their associations with selected game characteristics. We then develop a linear regression model to predict the logarithm of total review counts and compare its performance with a baseline model that predicts the mean. Model performance is evaluated using five-fold cross-validation on the training set and a held-out test set.</p>
@@ -2451,12 +2451,12 @@ window.Quarto = {
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data">Data</h2>
 <p>We used the cleaned and pre-split data produced by <code>scripts/process_data.py</code>: 46,859 Steam games released between 2018 and 2022, randomly split 80/20 into training and test sets (seed 1234). Only the training set is used for model building and selection; the test set is used once, at the end, to report final performance.</p>
-<div id="44207943" class="cell" data-execution_count="1">
+<div id="85478200" class="cell" data-execution_count="1">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>train <span class="op">=</span> pd.read_csv (<span class="st">&quot;../data/processed/train.csv&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>train <span class="op">=</span> pd.read_csv(<span class="st">&quot;../data/processed/train.csv&quot;</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>train.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
@@ -2467,8 +2467,8 @@ window.Quarto = {
 </section>
 <section id="target-variable" class="level2">
 <h2 class="anchored" data-anchor-id="target-variable">Target variable</h2>
-<p>We predict <code>log1p(total_reviews)</code>, the log of reviews + 1. Logrthmicly transforming prevents the few very popular games from dominating the model. Adding 1 to the value keeps games with zero reviews defined.</p>
-<div id="801b35b8" class="cell" data-execution_count="2">
+<p>We predict <code>log1p(total_reviews)</code>, the log of reviews + 1. Logathmicly transforming prevents the few very popular games from dominating the model. Adding 1 to the value keeps games with zero reviews defined.</p>
+<div id="f771c521" class="cell" data-execution_count="2">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -2490,7 +2490,7 @@ window.Quarto = {
 <p><code>appID</code> and <code>name</code> are identifiers and are not used as features.</p>
 <section id="transformation" class="level3">
 <h3 class="anchored" data-anchor-id="transformation">Transformation</h3>
-<div id="180f5034" class="cell" data-execution_count="3">
+<div id="5eeb7da0" class="cell" data-execution_count="3">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform the data to fit contract. Clip number of languages to a max of 10, and calculate release day.</span></span>
@@ -2501,7 +2501,7 @@ window.Quarto = {
 </section>
 <section id="preprocessing" class="level3">
 <h3 class="anchored" data-anchor-id="preprocessing">Preprocessing</h3>
-<div id="8fa4d4ca" class="cell" data-execution_count="4">
+<div id="b2e0c277" class="cell" data-execution_count="4">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
@@ -2530,7 +2530,7 @@ window.Quarto = {
 <p>We fit a linear regression, with the preprocessing and model combined in one pipeline. We compare it to a baseline that always predicts the mean.</p>
 <p>Both models are scored with 5-fold cross-validation on the training set. Because preprocessing is inside the pipeline, it is re-fit on each fold, so the validation data never influences it.</p>
 <p>Our main metric is RMSE on the <code>log1p</code> scale, which measures relative error so that a few very popular games do not dominate. We also report MAE and R².</p>
-<div id="b1341d64" class="cell" data-execution_count="5">
+<div id="c218ad8d" class="cell" data-execution_count="5">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyRegressor</span>
@@ -2679,7 +2679,7 @@ Figure 2: Median total reviews by the number of supported languages. The sample
 <section id="model-performance" class="level2">
 <h2 class="anchored" data-anchor-id="model-performance">Model performance</h2>
 <p>After cross-validation, we fit the linear regression on the full training set and scored it once on the test set.</p>
-<div id="0802cfe1" class="cell" data-execution_count="7">
+<div id="c27a22ff" class="cell" data-execution_count="7">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> root_mean_squared_error, mean_absolute_error, r2_score</span>
@@ -2786,7 +2786,7 @@ Table 2
 <h2 class="anchored" data-anchor-id="prediction-accuracy-by-game-popularity">Prediction accuracy by game popularity</h2>
 <section id="visualization-code" class="level3">
 <h3 class="anchored" data-anchor-id="visualization-code">Visualization Code:</h3>
-<div id="3706ff33" class="cell" data-execution_count="9">
+<div id="0c1117a9" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> altair <span class="im">as</span> alt</span>
@@ -2893,22 +2893,22 @@ Table 2
 <div aria-describedby="fig-prediction-accuracy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 
 <style>
-#altair-viz-6850e1d39fa141b58193476042d45c3b.vega-embed {
+#altair-viz-a7cf574144cf4310bd21bdbe60d54188.vega-embed {
 width: 100%;
 display: flex;
 }
-#altair-viz-6850e1d39fa141b58193476042d45c3b.vega-embed details,
-#altair-viz-6850e1d39fa141b58193476042d45c3b.vega-embed details summary {
+#altair-viz-a7cf574144cf4310bd21bdbe60d54188.vega-embed details,
+#altair-viz-a7cf574144cf4310bd21bdbe60d54188.vega-embed details summary {
 position: relative;
 }
 </style>
-<div id="altair-viz-6850e1d39fa141b58193476042d45c3b"></div>
+<div id="altair-viz-a7cf574144cf4310bd21bdbe60d54188"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-6850e1d39fa141b58193476042d45c3b") {
-      outputDiv = document.getElementById("altair-viz-6850e1d39fa141b58193476042d45c3b");
+    if (outputDiv.id !== "altair-viz-a7cf574144cf4310bd21bdbe60d54188") {
+      outputDiv = document.getElementById("altair-viz-a7cf574144cf4310bd21bdbe60d54188");
     }
 
     const paths = {
@@ -2976,25 +2976,32 @@ Figure 3: Predicted versus actual review counts for test-set games. (A) Every t
 <p>This pattern is expected from a model that explains only about a third of the variance. Price, languages, genres and categories can separate a polished game from a bare-bones one, but they cannot tell a hit from an ordinary well-made game. The factors behind a breakout hit, such as marketing, quality and word of mouth, are not in the data. The model is therefore more useful for comparing games roughly than for predicting the review count of any single game, especially a very popular one.</p>
 </section>
 </section>
-<section id="limitations" class="level2">
-<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
-<p>Our model struggles at both ends of the number of reviews distribution. A large portion of games in the training set have no reviews at all, and a linear model on log1p(total_reviews) treats these as low values rather than a separate group. It therefore cannot predict exactly zero.</p>
-<p>As shown in Panel B of <a href="#fig-prediction-accuracy" class="quarto-xref">Figure 3</a>, predictions are pulled toward the middle: the model over-predicts games with few or no reviews and under-predicts the most popular games. A model built to inflate zero counts so in order to eliminate this issue the selection of another model would likely be the course of action.</p>
-</section>
 </section>
 <section id="discussion" class="level1">
 <h1>Discussion</h1>
+<section id="summary-of-findings-and-link-to-research-question" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-findings-and-link-to-research-question">Summary of Findings and Link to Research Question</h2>
+<p>This study examined how well selected game characteristics predict the total number of reviews received by Steam games released between 2018 and 2022. The results show that these features provide useful predictive information, but explain only part of the differences in review counts, accounting for approximately 34% of the variation in log review counts on the test set (R² = 0.340). Although the linear regression model performed better than the mean baseline in cross-validation, its predictions were less accurate for games with very few or very high review counts.</p>
+</section>
 <section id="real-world-implications" class="level2">
 <h2 class="anchored" data-anchor-id="real-world-implications">Real-world implications</h2>
-<p>The findings provide insights into how selected game characteristics are related to review volume on Steam. For game developers and publishers, understanding these relationships may help them identify characteristics associated with greater audience engagement. However, these relationships should not be interpreted as evidence that a particular characteristic directly causes an increase in reviews.</p>
+<p>These findings suggest that game characteristics available on Steam provide some useful information about review volume. Developers and publishers may use these characteristics to compare games with different features and understand general patterns in review activity. However, the model should not be used to make precise predictions for individual games. Review volume is also not a direct measure of game quality, player satisfaction, or commercial success. Other factors, such as marketing activities, community engagement, and external visibility, may also influence review counts.</p>
 </section>
-<section id="limitations-1" class="level2">
-<h2 class="anchored" data-anchor-id="limitations-1">Limitations</h2>
-<p>This study has several limitations. First, estimated ownership is provided as a range rather than an exact number, which may reduce measurement precision. Second, the analysis focuses on four selected predictors and does not account for other factors that may influence review volume, such as marketing activities, game quality, and release timing. The dataset also lacks detailed information about marketing budgets, external advertising reach, and launch strategies, which may affect a game’s visibility and the number of reviews it receives. Furthermore, games released in different years have had varying amounts of time to accumulate reviews, which may affect comparisons of review volume.</p>
+<section id="alignment-with-expectations" class="level2">
+<h2 class="anchored" data-anchor-id="alignment-with-expectations">Alignment with Expectations</h2>
+<p>Some findings matched our expectations, including the strong right-skew in review counts (mean = 1,158.54; median = 14) and higher median review counts for games supporting more languages. The model also showed a clear tendency to overpredict review counts for games with few or no reviews and underpredict them for games with more than 3,000 reviews.</p>
+</section>
+<section id="assumptions-and-limitations" class="level2">
+<h2 class="anchored" data-anchor-id="assumptions-and-limitations">Assumptions and Limitations</h2>
+<p>Our model struggles at both ends of the distribution of review counts. A large portion of games in the training set have no reviews, and a linear model using log1p(total_reviews) treats these as low values rather than as a separate group. Therefore, it does not explicitly model zero-review games. As shown in Panel B of <a href="#fig-prediction-accuracy" class="quarto-xref">Figure 3</a>, predictions are pulled toward the middle: the model overpredicts review counts for games with few or no reviews and underpredicts them for games with the highest review counts. A model designed to account for excess zero counts may help address this limitation. Linear regression assumes that the relationships between the selected features and log review counts can be represented by a linear combination. It may therefore miss nonlinear relationships and interactions. The model also uses only five groups of game characteristics and excludes potentially important factors such as marketing activities, developer reputation, and community size. In addition, games released in different years may have had different amounts of time to accumulate reviews, affecting comparisons. Finally, these results describe predictive relationships and do not establish that any particular game characteristic causes an increase in reviews.</p>
+</section>
+<section id="potential-impact" class="level2">
+<h2 class="anchored" data-anchor-id="potential-impact">Potential Impact</h2>
+<p>These insights may help developers and publishers make more informed decisions about game design and marketing by providing a general understanding of the characteristics associated with review volume. However, review counts should be considered alongside other indicators of game performance.</p>
 </section>
 <section id="future-directions" class="level2">
 <h2 class="anchored" data-anchor-id="future-directions">Future directions</h2>
-<p>Future research could investigate additional factors that may influence review volume, such as game ratings, marketing activities, and developer reputation. Researchers could also examine whether the relationships between game characteristics and review counts differ across release years. Finally, comparing linear regression with alternative predictive models could help determine whether more complex methods provide better predictions of Steam game review counts.</p>
+<p>Future research could examine whether adding factors such as game ratings, marketing activities, developer reputation, and community size improves prediction performance. It could also investigate whether relationships between game characteristics and review counts differ across release years. Comparing linear regression with nonlinear, zero-inflated, or two-part models may help address the prediction errors observed in this study. Finally, applying similar methods to games from other release periods or platforms could help assess whether these findings generalize beyond the dataset.</p>
 </section>
 </section>
 <section id="references" class="level1">

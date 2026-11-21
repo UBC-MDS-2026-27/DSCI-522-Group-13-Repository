@@ -12,19 +12,13 @@ jupyter: python3
 
 # Summary
 
-This project investigates how well game characteristics can predict the total number of reviews received by Steam games released between 2018 and 2022. Using the Steam Games Dataset, we explore relationships between review counts and game features, including price, genres, categories, number of supported languages, and release date.
-
-We conduct exploratory data analysis to examine review distributions and feature relationships, followed by regression modeling to evaluate predictive performance.
-
-The goal is to better understand which game characteristics are associated with player engagement, using review counts as a measurable indicator.
-
+This project investigates how well game characteristics can predict the total number of reviews received by Steam games released between 2018 and 2022. Using the Steam Games Dataset, we explore relationships between review counts and game features, including price, genres, categories, number of supported languages, and release date. We conduct exploratory data analysis to examine review distributions and feature relationships, followed by regression modeling to evaluate predictive performance. The results show that our linear regression model explains approximately one-third of the variation in log review counts on the test set and performs better than the mean baseline in cross-validation. These findings suggest that game characteristics provide useful predictive information and may help developers and publishers better understand patterns in review activity. However, the model is less accurate for games with very few or very high review counts, and other factors, such as marketing activities, developer reputation, and community engagement, are not included in the model. 
 
 # Introduction
 
-
 The video game industry has become a major part of the digital entertainment market, with online platforms such as Steam providing developers and publishers access to a global audience. In addition to purchasing and playing games, Steam users can share their experiences and recommend games through reviews (Valve, n.d.). These reviews provide insights into player opinions and serve as a measurable indicator of audience engagement.
 
-Understanding the factors associated with review volume is important for game developers and publishers because reviews can provide insights into player engagement and a game's visibility among potential players. Previous research has examined the relationship between online reviews and video game usage, as well as how different player engagement modes influence review characteristics (Philp & Nepomuceno, 2024; Guzsvinecz & Szűcs, 2026). Research on the Steam platform has also investigated game reviews and their relationship with game characteristics (Lin et al., 2019). Characteristics such as price, genres, available features, language support, and release timing may be associated with differences in the number of reviews received. Examining these relationships may help developers and publishers better understand which game characteristics are associated with greater audience engagement.
+Understanding the factors associated with review volume is important for game developers and publishers because reviews can provide insights into player engagement and a game's visibility among potential players. Previous research has examined the relationship between online reviews and video game usage (Philp & Nepomuceno, 2024), as well as how different player engagement modes influence review characteristics (Guzsvinecz & Szűcs, 2026). Research on the Steam platform has also investigated game reviews and their relationship with game characteristics (Lin et al., 2019). These studies provide relevant background for understanding review activity in video games. However, examining how selected game characteristics can be used to predict the total number of reviews remains the focus of our study. Characteristics such as price, genres, available features, language support, and release timing may be associated with differences in the number of reviews received. Examining these relationships may help developers and publishers better understand which game characteristics are associated with greater audience engagement.
 
 This study investigates the following research question: How well can selected game characteristics predict the total number of reviews received by Steam games released between 2018 and 2022? Specifically, the analysis examines five groups of explanatory variables: game price, number of supported languages, release date, genres, and Steam categories. Total review count, calculated by adding positive and negative reviews, is used as the response variable.
 
@@ -43,7 +37,7 @@ We used the cleaned and pre-split data produced by `scripts/process_data.py`: 46
 ```{python}
 import pandas as pd
 
-train = pd.read_csv ("../data/processed/train.csv")
+train = pd.read_csv("../data/processed/train.csv")
 
 train.shape
 ```
@@ -51,7 +45,7 @@ train.shape
 
 ## Target variable
 
-We predict `log1p(total_reviews)`, the log of reviews + 1. Logrthmicly transforming prevents the few very popular games from dominating the model. Adding 1 to the value keeps games with zero reviews defined.
+We predict `log1p(total_reviews)`, the log of reviews + 1. Logathmicly transforming prevents the few very popular games from dominating the model. Adding 1 to the value keeps games with zero reviews defined.
 
 ```{python}
 import numpy as np
@@ -356,22 +350,27 @@ Panel B shows that the model's predictions are pulled toward the middle. Across 
 
 This pattern is expected from a model that explains only about a third of the variance. Price, languages, genres and categories can separate a polished game from a bare-bones one, but they cannot tell a hit from an ordinary well-made game. The factors behind a breakout hit, such as marketing, quality and word of mouth, are not in the data. The model is therefore more useful for comparing games roughly than for predicting the review count of any single game, especially a very popular one.
 
-## Limitations
-
-Our model struggles at both ends of the number of reviews distribution. A large portion of games in the training set have no reviews at all, and a linear model on log1p(total_reviews) treats these as low values rather than a separate group. It therefore cannot predict exactly zero. 
-
-As shown in Panel B of @fig-prediction-accuracy, predictions are pulled toward the middle: the model over-predicts games with few or no reviews and under-predicts the most popular games. A model built to inflate zero counts so in order to eliminate this issue the selection of another model would likely be the course of action.
 
 # Discussion
+## Summary of Findings and Link to Research Question
+This study examined how well selected game characteristics predict the total number of reviews received by Steam games released between 2018 and 2022. The results show that these features provide useful predictive information, but explain only part of the differences in review counts, accounting for approximately 34% of the variation in log review counts on the test set (R² = 0.340). Although the linear regression model performed better than the mean baseline in cross-validation, its predictions were less accurate for games with very few or very high review counts.
 
 ## Real-world implications
-The findings provide insights into how selected game characteristics are related to review volume on Steam. For game developers and publishers, understanding these relationships may help them identify characteristics associated with greater audience engagement. However, these relationships should not be interpreted as evidence that a particular characteristic directly causes an increase in reviews.
+These findings suggest that game characteristics available on Steam provide some useful information about review volume. Developers and publishers may use these characteristics to compare games with different features and understand general patterns in review activity. However, the model should not be used to make precise predictions for individual games. Review volume is also not a direct measure of game quality, player satisfaction, or commercial success. Other factors, such as marketing activities, community engagement, and external visibility, may also influence review counts.
 
-## Limitations
-This study has several limitations. First, estimated ownership is provided as a range rather than an exact number, which may reduce measurement precision. Second, the analysis focuses on four selected predictors and does not account for other factors that may influence review volume, such as marketing activities, game quality, and release timing. The dataset also lacks detailed information about marketing budgets, external advertising reach, and launch strategies, which may affect a game's visibility and the number of reviews it receives. Furthermore, games released in different years have had varying amounts of time to accumulate reviews, which may affect comparisons of review volume.
+## Alignment with Expectations
+Some findings matched our expectations, including the strong right-skew in review counts (mean = 1,158.54; median = 14) and higher median review counts for games supporting more languages. The model also showed a clear tendency to overpredict review counts for games with few or no reviews and underpredict them for games with more than 3,000 reviews.
+
+## Assumptions and Limitations
+Our model struggles at both ends of the distribution of review counts. A large portion of games in the training set have no reviews, and a linear model using log1p(total_reviews) treats these as low values rather than as a separate group. Therefore, it does not explicitly model zero-review games.
+As shown in Panel B of @fig-prediction-accuracy, predictions are pulled toward the middle: the model overpredicts review counts for games with few or no reviews and underpredicts them for games with the highest review counts. A model designed to account for excess zero counts may help address this limitation.
+Linear regression assumes that the relationships between the selected features and log review counts can be represented by a linear combination. It may therefore miss nonlinear relationships and interactions. The model also uses only five groups of game characteristics and excludes potentially important factors such as marketing activities, developer reputation, and community size. In addition, games released in different years may have had different amounts of time to accumulate reviews, affecting comparisons. Finally, these results describe predictive relationships and do not establish that any particular game characteristic causes an increase in reviews.
+
+## Potential Impact
+These insights may help developers and publishers make more informed decisions about game design and marketing by providing a general understanding of the characteristics associated with review volume. However, review counts should be considered alongside other indicators of game performance.
 
 ## Future directions
-Future research could investigate additional factors that may influence review volume, such as game ratings, marketing activities, and developer reputation. Researchers could also examine whether the relationships between game characteristics and review counts differ across release years. Finally, comparing linear regression with alternative predictive models could help determine whether more complex methods provide better predictions of Steam game review counts.
+Future research could examine whether adding factors such as game ratings, marketing activities, developer reputation, and community size improves prediction performance. It could also investigate whether relationships between game characteristics and review counts differ across release years. Comparing linear regression with nonlinear, zero-inflated, or two-part models may help address the prediction errors observed in this study. Finally, applying similar methods to games from other release periods or platforms could help assess whether these findings generalize beyond the dataset.
 
 # References
 FronkonGames. (n.d.). Steam Games Dataset [Data set]. Hugging Face. https://doi.org/10.57967/hf/0511
