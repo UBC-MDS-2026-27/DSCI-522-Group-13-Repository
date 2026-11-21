@@ -24,8 +24,8 @@ Check existing issues before opening a new one.
 Clone the repository:
 
 ```bash
-git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-13-Repository.git
-cd DSCI-522-Group-13-Repository
+git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-13-Steam-Game-popularity-analysis.git
+cd DSCI-522-Group-13-Steam-Game-popularity-analysis
 ```
 
 Install the project dependencies using `uv`:
