@@ -87,8 +87,12 @@ See [`LICENSE.md`](LICENSE.md) for the full terms.
 ## AI use statement
 
 Generative AI tools, including Claude (Opus 5.5), were used throughout this project as an assistant rather than a guide: for debugging, documentation, code explanations, and brainstorming.
-All AI-assisted work was reviewed, tested, and verified by a team member before merging, following the AI usage policy in [`CONTRIBUTING.md`](CONTRIBUTING.md#ai-usage-policy).
-Substantial AI contributions are cited in the code where they were used, for example in [`analysis/videogames-regression.qmd`](analysis/videogames-regression.qmd).
+We used it to help write and debug code,
+to review our work against the milestone requirements, to explain code and errors, and to propose edits to documentation.
+Every AI-assisted change was read, tested and understood by a team member, then reviewed and merged by a human teammate,
+following the AI usage policy in [`CONTRIBUTING.md`](CONTRIBUTING.md#ai-usage-policy).
+Substantial AI contributions are also noted in the code where they appear,
+for example in [`analysis/videogames-regression.qmd`](analysis/videogames-regression.qmd).
 
 Instruction files: none are committed to this repository.
 
