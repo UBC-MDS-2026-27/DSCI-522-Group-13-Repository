@@ -7,3 +7,10 @@ data/raw/*.part
 **/*.quarto_ipynb
 
 analysis/videogames-regression_files
+# Python bytecode (created when the report imports from scripts/)
+__pycache__/
+
+# LaTeX leftovers from PDF renders
+analysis/*.aux
+analysis/*.log
+analysis/*.tex

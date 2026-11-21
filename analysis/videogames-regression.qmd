@@ -2,6 +2,10 @@
 title: "Steam Games Analysis"
 author: "Howard Song, Milan Bertolutti, Yuanchen Ling, Maryamalsadat Hosseini"
 format:
+  pdf:
+    include-in-header:
+      text: |
+        \usepackage{multirow}
   html:
     toc: true
     code-fold: show
@@ -32,20 +36,63 @@ This study aims to evaluate the predictive value of selected game characteristic
 
 ## Data
 
-We used the cleaned and pre-split data produced by `scripts/process_data.py`: 46,859 Steam games released between 2018 and 2022, randomly split 80/20 into training and test sets (seed 1234). Only the training set is used for model building and selection; the test set is used once, at the end, to report final performance.
+The code below downloads the Steam Games Dataset (FronkonGames, n.d.) from Hugging Face and saves an unmodified copy to `data/raw/`. The download is skipped if that file already exists. We then keep games released between 2018 and 2022, drop rows with missing review counts, duplicate games or unreadable release dates, and save the cleaned data to `data/processed/`. This leaves 46,859 games, which we split at random into a training set (80%) and a test set (20%) using seed 1234. The split happens before any exploratory analysis: only the training set is used for exploration and model building, and the test set is used once, at the end, to report final performance.
 
 ```{python}
+import sys
+from pathlib import Path
+
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
-train = pd.read_csv("../data/processed/train.csv")
+# Reuse the download and cleaning functions from scripts/process_data.py
+sys.path.append("../scripts")
+from process_data import (
+    DATA_URL,
+    EXPECTED_COHORT_SIZE,
+    RAW_FILENAME,
+    SEED,
+    TEST_SIZE,
+    clean_data,
+    download_data,
+)
 
+raw_dir = Path("../data/raw")
+processed_dir = Path("../data/processed")
+processed_dir.mkdir(parents=True, exist_ok=True)
+
+# 1. Download the raw data (skipped if it is already in data/raw/)
+raw_path = download_data(DATA_URL, raw_dir / RAW_FILENAME)
+raw = pd.read_parquet(raw_path)
+
+# 2. Clean it and record every dropped row with the reason
+cleaned, ledger = clean_data(raw)
+if len(cleaned) != EXPECTED_COHORT_SIZE:
+    raise ValueError(
+        f"Expected {EXPECTED_COHORT_SIZE:,} games after cleaning, got {len(cleaned):,}."
+    )
+
+# 3. Split before any exploration
+train_split, test_split = train_test_split(
+    cleaned, test_size=TEST_SIZE, random_state=SEED
+)
+
+cleaned.to_csv(processed_dir / "cleaned.csv", index=False)
+ledger.to_csv(processed_dir / "drop-ledger.csv", index=False)
+train_split.to_csv(processed_dir / "train.csv", index=False)
+test_split.to_csv(processed_dir / "test.csv", index=False)
+
+ledger["reason"].value_counts()
+```
+
+```{python}
+train = pd.read_csv(processed_dir / "train.csv")
 train.shape
 ```
 
-
 ## Target variable
 
-We predict `log1p(total_reviews)`, the log of reviews + 1. Logathmicly transforming prevents the few very popular games from dominating the model. Adding 1 to the value keeps games with zero reviews defined.
+We predict `log1p(total_reviews)`, the log of reviews + 1. Logarithmically transforming prevents the few very popular games from dominating the model. Adding 1 to the value keeps games with zero reviews defined.
 
 ```{python}
 import numpy as np
@@ -99,7 +146,7 @@ We fit a linear regression, with the preprocessing and model combined in one pip
 
 Both models are scored with 5-fold cross-validation on the training set. Because preprocessing is inside the pipeline, it is re-fit on each fold, so the validation data never influences it.
 
-Our main metric is RMSE on the `log1p` scale, which measures relative error so that a few very popular games do not dominate. We also report MAE and R².
+Our main metric is Root Mean Square Error (RMSE) on the `log1p` scale, which measures relative error so that a few very popular games do not dominate. We also report Mean Absolute Error (MAE) and R².
 
 
 ```{python}
@@ -147,18 +194,27 @@ are presented in @tbl-training-summary.
 #| label: tbl-training-summary
 #| tbl-cap: "Descriptive statistics of the training dataset"
 #| echo: false
-
-import pandas as pd
-
-summary = pd.read_csv(
-    "tables/training_summary.csv"
+summary = train[["price", "n_languages", "total_reviews"]].describe().T
+summary = summary.rename(
+    index={
+        "price": "Price (USD)",
+        "n_languages": "Supported languages (count)",
+        "total_reviews": "Total reviews (count)",
+    },
+    columns={
+        "count": "N",
+        "mean": "Mean",
+        "std": "SD",
+        "min": "Min",
+        "25%": "Q1",
+        "50%": "Median",
+        "75%": "Q3",
+        "max": "Max",
+    },
 )
-
-from IPython.display import display
-
-display(
-    summary.round(2)
-)
+summary["N"] = summary["N"].astype(int)
+summary.index.name = "Variable"
+summary.round(2)
 ```
 
 The mean number of reviews (1,158.54) is substantially
@@ -171,15 +227,53 @@ The exploratory data analysis was conducted using only the training dataset to a
 
 ### Distribution of Total Reviews
 
-![Distribution of log-transformed total reviews among Steam games in the training dataset. The log(1 + total reviews) transformation accounts for games with zero reviews and reduces the influence of extreme values.](figures/review_distribution.png){#fig-review-distribution}
+```{python}
+#| label: fig-review-distribution
+#| fig-cap: "Distribution of log-transformed total reviews among Steam games in the training dataset. The log(1 + total reviews) transformation accounts for games with zero reviews and reduces the influence of extreme values."
+#| echo: false
+import matplotlib.pyplot as plt
 
-The distribution of total reviews is highly right-skewed. Most games receive relatively few reviews, while a small number of games receive substantially more. Applying the log transformation makes the distribution easier to visualize while retaining games with zero reviews.
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.hist(np.log1p(train["total_reviews"]), bins=60, edgecolor="white", linewidth=0.5)
+ax.set_xlabel("log(1 + total reviews)")
+ax.set_ylabel("Number of games")
+plt.show()
+```
+
+The distribution of total reviews is highly right-skewed (@fig-review-distribution). Most games receive relatively few reviews, while a small number of games receive substantially more. Applying the log transformation makes the distribution easier to visualize while retaining games with zero reviews.
 
 ### Supported Languages and Review Counts
 
-![Median total reviews by the number of supported languages. The sample size of each group is displayed above the corresponding bar.](figures/reviews_by_languages.png){#fig-language-reviews}
+```{python}
+#| label: fig-language-reviews
+#| fig-cap: "Median total reviews by the number of supported languages. The sample size of each group is displayed above the corresponding bar."
+#| echo: false
+language_group = pd.cut(
+    train["n_languages"],
+    bins=[-1, 0, 1, 3, 10, np.inf],
+    labels=["0", "1", "2–3", "4–10", "11+"],
+)
+by_language = train.groupby(language_group, observed=False)["total_reviews"].agg(
+    ["median", "size"]
+)
 
-Games supporting more languages tend to have higher median review counts. This suggests a positive association between language availability and review volume. However, this relationship is descriptive and does not establish causality.
+fig, ax = plt.subplots(figsize=(8, 5))
+bars = ax.bar(by_language.index.astype(str), by_language["median"])
+for bar, n in zip(bars, by_language["size"]):
+    ax.annotate(
+        f"n={n:,}",
+        (bar.get_x() + bar.get_width() / 2, bar.get_height()),
+        xytext=(0, 5),
+        textcoords="offset points",
+        ha="center",
+    )
+ax.set_xlabel("Number of supported languages")
+ax.set_ylabel("Median total reviews per game")
+ax.set_ylim(0, by_language["median"].max() * 1.25)
+plt.show()
+```
+
+Games supporting more languages tend to have higher median review counts (@fig-language-reviews). This suggests a positive association between language availability and review volume. However, this relationship is descriptive and does not establish causality.
 
 ## Model performance
 
@@ -214,15 +308,16 @@ error_factor = np.exp(test_lr["MAE"])  # MAE on the log scale -> multiplicative 
 
 ```{python}
 #| label: tbl-performance
+#| tbl-cap: "Cross-validation and test-set performance of the baseline and linear regression models"
 pd.concat(
     {"Cross-validation": cv_results, "Test set": test_results},
     names=["Evaluated on", "Model"],
 ) + 0.0  # turns the baseline's rounded R² of -0.000 into 0.000
 ```
 
-Linear regression beats the mean baseline on every metric (@tbl-performance). In cross-validation it lowers RMSE from `{python} f"{cv_base['RMSE']:.2f}"` to `{python} f"{cv_lr['RMSE']:.2f}"` and explains `{python} f"{cv_lr['R²']:.0%}"` of the variance in log reviews, while the baseline explains none. The improvements are their but the model only explains some of the variance. The features Price, number of languages, release day, genres and categories together account for about a third of the variation in how many reviews a game gets. This indicates that there are features out there that explain more of that variance that was not trained in the model. 
+Linear regression beats the mean baseline on every metric (@tbl-performance). In cross-validation it lowers RMSE from `{python} f"{cv_base['RMSE']:.2f}"` to `{python} f"{cv_lr['RMSE']:.2f}"` and explains `{python} f"{cv_lr['R²']:.0%}"` of the variance in log reviews, while the baseline explains none. The improvements are there but the model only explains some of the variance. The features Price, number of languages, release day, genres and categories together account for about a third of the variation in how many reviews a game gets. This indicates that there are features out there that explain more of that variance that was not trained in the model. 
 
-The train test gap are very close together (RMSE `{python} f"{test_lr['RMSE']:.2f}"` vs `{python} f"{cv_lr['RMSE']:.2f}"`; R² `{python} f"{test_lr['R²']:.2f}"` vs `{python} f"{cv_lr['R²']:.2f}"`). This means the model is not overfitting and should perform about as well on other Steam games released in 2018 - 2022. In practical terms, the test MAE is `{python} f"{test_lr['MAE']:.2f}"` on the log scale. Because the model predicts $\log(1 + y)$, a gap of $d$ between the actual count $y$ and the predicted count $\hat{y}$ on the log scale is a ratio of $e^{d}$ on the original scale:
+The gap between the training validation is very close together (RMSE `{python} f"{test_lr['RMSE']:.2f}"` vs `{python} f"{cv_lr['RMSE']:.2f}"`; R² `{python} f"{test_lr['R²']:.2f}"` vs `{python} f"{cv_lr['R²']:.2f}"`). This means the model is not overfitting and should perform about as well on other Steam games released in 2018 - 2022. In practical terms, the test MAE is `{python} f"{test_lr['MAE']:.2f}"` on the log scale. Because the model predicts $\log(1 + y)$, a gap of $d$ between the actual count $y$ and the predicted count $\hat{y}$ on the log scale is a ratio of $e^{d}$ on the original scale:
 
 $$
 \log(1 + y) - \log(1 + \hat{y}) = d
