@@ -73,6 +73,7 @@ Contributors must:
 - Disclose substantial AI assistance in the relevant PR or documentation.
 - Follow UBC MDS academic integrity guidelines.
 - Ensure all contributions are reviewed by a human team member before merging.
+- Open, review and merge all issues and PRs.
 
 Contributors remain responsible for the accuracy and quality of their work.
 
