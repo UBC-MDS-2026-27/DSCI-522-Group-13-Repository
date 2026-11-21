@@ -1,4 +1,4 @@
-# Regressing video game playtime and genera to predict Steam video game revenue. 
+# Regressing video game characteristics to predict Steam video game review counts
 
 ## Authors
 
@@ -9,32 +9,22 @@
 
 ## Summary
 
-//TODO: One short paragraph, a view from 10,000 feet, that covers:
-//TODO: - the question you asked
-//TODO: - what you found, at a high level
-//TODO: - 1-2 sentences on what the findings might mean
 
-A Python project analyzing the [FronkonGames/steam-games-dataset](https://huggingface.co/datasets/FronkonGames/steam-games-dataset). We fit a linear regression model on price, genre, category, language count and release date to predict `total_reviews`, which we use as a proxy for revenue.
+How well do game characteristics predict the total number of reviews for Steam games released 2018–2022? 
 
-
-//TODO: What was found at a high level
-//TODO: 1-2 sentences on what our findings mean
+We aimed to answer this question using the [FronkonGames steam games dataset](https://huggingface.co/datasets/FronkonGames/steam-games-dataset) to train a linear regression model using the features price, genre, category, language count and release date, compared against a mean baseline. Our trained model explains about one-third of the variance in log review counts on the test set and beats the mean baseline. This shows that game metadata carries useful predictive signal for developers/publishers, but it is predictive, not causal. One limitation of our model is that it is less accurate at very low and very high review counts. Features such as marketing, developer reputation, and community engagement are not taken into account within our model.
 
 
 ## How to run the analysis
 
-These instructions work on both Windows and macOS.
-Run every command in a terminal, from the root of the repository unless a step says otherwise.
-//TODO: Name the terminal you tested on Windows (e.g., PowerShell or Git Bash).
-//TODO: After implementation
+These instructions were tested on macOS.
+Run every command from the root of the repository.
 
 ### Prerequisites
 
-Install the following before you start:
-
 - [Git](https://git-scm.com/downloads)
-- //TODO: [uv](https://docs.astral.sh/uv/getting-started/installation/) for Python
-- //TODO: [Quarto](https://quarto.org/docs/get-started/) (version //TODO)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) (installs Python 3.14 for you)
+- [Quarto](https://quarto.org/docs/get-started/) 1.10 or later
 
 ### 1. Clone the repository
 
@@ -46,47 +36,71 @@ cd DSCI-522-Group-13-Repository
 ### 2. Set up the computational environment
 
 ```bash
-//TODO: environment setup command (e.g., `uv sync` for Python, or `Rscript -e "renv::restore()"` for R)
+uv sync
 ```
 
-### 3. Run the analysis and render the report
+### 3. Download the data and run the analysis
+
+Run these in order:
 
 ```bash
-//TODO: command that runs the analysis and renders the report (e.g., `uv run quarto render analysis/<descriptive-name>.qmd`)
+uv run python scripts/process_data.py
+uv run python scripts/eda_summary.py
+uv run python scripts/eda_visualizations.py
 ```
 
-//TODO: Say where the rendered report appears (e.g., `analysis/<descriptive-name>.html`) and how to open it.
+The first script downloads the dataset (about 190 MB) from Hugging Face to `data/raw/` and writes the cleaned and split data to `data/processed/`.
+If the dataset is already downloaded, it skips the download.
 
-//TODO: If any step differs between Windows and macOS, show both versions here.
+### 4. Render the report
+
+```bash
+uv run quarto render analysis/videogames-regression.qmd
+```
+
+Rendering runs the model code in the report: it fits the regression, cross-validates it, and scores it on the test set.
+
+### 5. View the report
+
+The report is rendered to `analysis/videogames-regression.html`:
+
+```bash
+open analysis/videogames-regression.html    # macOS
+start analysis/videogames-regression.html   # Windows
+```
 
 ## Dependencies
 
-//TODO: List the dependencies, or link to where they are listed:
-
-- //TODO: e.g., uv or renv (version)
-- //TODO: e.g., Quarto (version)
-- //TODO: e.g., Python packages listed in [`pyproject.toml`](pyproject.toml), or R packages listed in [`renv.lock`](renv.lock)
+- [uv](https://docs.astral.sh/uv/) 0.12 or later
+- Python 3.14 (set in [`.python-version`](.python-version), installed by uv)
+- [Quarto](https://quarto.org/) 1.10 or later
+- Python packages listed in [`pyproject.toml`](pyproject.toml), with exact versions pinned in [`uv.lock`](uv.lock)
 
 ## License
 
-//TODO: Name the licenses in [`LICENSE.md`](LICENSE.md); the names here must match that file exactly.
+- Code: MIT License
+- Report: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)
 
-- Code: //TODO: e.g., MIT License
-- Report: //TODO: e.g., CC BY-NC-ND 4.0
+The data is not covered by either license and remains under the license of its original source.
+See [`LICENSE.md`](LICENSE.md) for the full terms.
 
 ## AI use statement
 
-//TODO: Say whether you used generative AI (e.g., ChatGPT, Claude, Copilot) in this project.
+Generative AI tools, including Claude (Opus 5.5), were used throughout this project as an assistant rather than a guide: for debugging, documentation, code explanations, and brainstorming.
+We used it to help write and debug code,
+to review our work against the milestone requirements, to explain code and errors, and to propose edits to documentation.
+Every AI-assisted change was read, tested and understood by a team member, then reviewed and merged by a human teammate,
+following the AI usage policy in [`CONTRIBUTING.md`](CONTRIBUTING.md#ai-usage-policy).
+Substantial AI contributions are also noted in the code where they appear,
+for example in [`analysis/videogames-regression.qmd`](analysis/videogames-regression.qmd).
 
-//TODO: If you did, say how: which tools and models, and which parts of the project.
-
-Instruction files: //TODO: link to the instruction files committed to this repository (e.g., [`AI_USAGE.md`](AI_USAGE.md), [`CLAUDE.md`](CLAUDE.md), or a system prompt file).
+Instruction files: none are committed to this repository.
 
 Example prompts:
 
-- //TODO: example prompt 1
-- //TODO: example prompt 2
-- //TODO: example prompt 3
+- Verify the model training pipeline I have written for any issues. Does it align with the outlined question and data contract?
+- Verify that my implementation of a log1p() and other transformation is correct here.
+- I am having some trouble formatting this expression into LaTeX, correct the equation.
 
 ## Rendered report
 
