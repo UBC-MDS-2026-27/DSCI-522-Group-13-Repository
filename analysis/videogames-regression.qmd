@@ -20,15 +20,19 @@ The goal is to better understand which game characteristics are associated with 
 
 
 # Introduction
-The video game industry has become a major part of the digital entertainment market, with online platforms such as Steam providing developers and publishers access to a global audience. In addition to purchasing and playing games, Steam users can share their experiences and recommend games through reviews (Valve, n.d.). These reviews provide information about player opinions and offer a measurable indicator of audience engagement.
 
-Understanding the factors associated with review volume is important for developers and publishers because reviews can provide insights into player experiences and engagement. Previous research has examined how reviews relate to video game usage and how player engagement modes influence review characteristics (Philp & Nepomuceno, 2024; Guzsvinecz & Szűcs, 2026). In particular, pricing, game genres, available features, and estimated ownership may be associated with differences in the number of reviews received by games. Understanding these relationships could help inform decisions about game positioning and market strategies.
 
-This study investigates the following research question: How well can game price, genres, categories, and estimated owners predict the total number of reviews received by Steam games released between 2018 and 2022?
+The video game industry has become a major part of the digital entertainment market, with online platforms such as Steam providing developers and publishers access to a global audience. In addition to purchasing and playing games, Steam users can share their experiences and recommend games through reviews (Valve, n.d.). These reviews provide insights into player opinions and serve as a measurable indicator of audience engagement.
 
-The analysis uses the Steam Games Dataset published by FronkonGames on Hugging Face (FronkonGames, n.d.). Each row represents an individual Steam game. The dataset includes information such as release date, price, genres, categories, estimated owners, and positive and negative review counts. The study focuses on 46,859 games released between 2018 and 2022. The response variable, total reviews, is calculated by adding the positive and negative review counts. The explanatory variables are price, genres, categories, and estimated owners. These variables provide the information needed to investigate the research question using regression analysis.
+Understanding the factors associated with review volume is important for game developers and publishers because reviews can provide insights into player engagement and a game's visibility among potential players. Previous research has examined the relationship between online reviews and video game usage, as well as how different player engagement modes influence review characteristics (Philp & Nepomuceno, 2024; Guzsvinecz & Szűcs, 2026). Research on the Steam platform has also investigated game reviews and their relationship with game characteristics (Lin et al., 2019). Characteristics such as price, genres, available features, language support, and release timing may be associated with differences in the number of reviews received. Examining these relationships may help developers and publishers better understand which game characteristics are associated with greater audience engagement.
 
-In this study, the analysis aims to identify predictive relationships rather than establish causation.
+This study investigates the following research question: How well can selected game characteristics predict the total number of reviews received by Steam games released between 2018 and 2022? Specifically, the analysis examines five groups of explanatory variables: game price, number of supported languages, release date, genres, and Steam categories. Total review count, calculated by adding positive and negative reviews, is used as the response variable.
+
+The analysis uses the Steam Games Dataset published by FronkonGames on Hugging Face (FronkonGames, n.d.). Each row represents an individual Steam game, with information including release date, price, genres, categories, language support, and positive and negative review counts. The study focuses on 46,859 games released between 2018 and 2022. The dataset is randomly divided into training and test sets, with 80% of the data used for exploratory data analysis and model development and the remaining 20% reserved for final model evaluation.
+
+To investigate the research question, we first conduct exploratory data analysis to examine the distribution of review counts and explore their associations with selected game characteristics. We then develop a linear regression model to predict the logarithm of total review counts and compare its performance with a baseline model that predicts the mean. Model performance is evaluated using five-fold cross-validation on the training set and a held-out test set.
+
+This study aims to evaluate the predictive value of selected game characteristics rather than establish causal relationships. By examining both feature associations and predictive performance, the analysis provides insights into how well game metadata can explain and predict differences in review volume, while highlighting the limitations of using these characteristics alone to estimate player engagement.
 
 # Methods
 
@@ -39,9 +43,11 @@ We used the cleaned and pre-split data produced by `scripts/process_data.py`: 46
 ```{python}
 import pandas as pd
 
-train = pd.read_csv("../data/processed/train.csv")
+train = pd.read_csv ("../data/processed/train.csv")
+
 train.shape
 ```
+
 
 ## Target variable
 
@@ -368,9 +374,11 @@ This study has several limitations. First, estimated ownership is provided as a 
 Future research could investigate additional factors that may influence review volume, such as game ratings, marketing activities, and developer reputation. Researchers could also examine whether the relationships between game characteristics and review counts differ across release years. Finally, comparing linear regression with alternative predictive models could help determine whether more complex methods provide better predictions of Steam game review counts.
 
 # References
-FronkonGames. (n.d.). Steam Games Dataset. Hugging Face. https://doi.org/10.57967/hf/0511
+FronkonGames. (n.d.). Steam Games Dataset [Data set]. Hugging Face. https://doi.org/10.57967/hf/0511
 
 Guzsvinecz, T., & Szűcs, J. (2026). Emotions in play: A length and sentiment analysis of Steam reviews by player engagement mode. Heliyon, 12, e45258. https://doi.org/10.1016/j.heliyon.2026.e45258
+
+Lin, D., Bezemer, C. P., Zou, Y., & Hassan, A. E. (2019). An empirical study of game reviews on the Steam platform. Empirical Software Engineering, 24, 170–207. https://doi.org/10.1007/s10664-018-9627-4
 
 Philp, M., & Nepomuceno, M. V. (2024). How reviews influence product usage post-purchase: An examination of video game playtime. Journal of Business Research, 172, 114456. https://doi.org/10.1016/j.jbusres.2023.114456
 
