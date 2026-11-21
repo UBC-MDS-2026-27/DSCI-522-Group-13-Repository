@@ -2405,7 +2405,7 @@ window.Quarto = {
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
-<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="videogames-regression.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</nav>
 </div>
 <main class="content" id="quarto-document-content" tabindex="-1">
 
@@ -2452,7 +2452,7 @@ window.Quarto = {
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data">Data</h2>
 <p>The code below downloads the Steam Games Dataset (FronkonGames, n.d.) from Hugging Face and saves an unmodified copy to <code>data/raw/</code>. The download is skipped if that file already exists. We then keep games released between 2018 and 2022, drop rows with missing review counts, duplicate games or unreadable release dates, and save the cleaned data to <code>data/processed/</code>. This leaves 46,859 games, which we split at random into a training set (80%) and a test set (20%) using seed 1234. The split happens before any exploratory analysis: only the training set is used for exploration and model building, and the test set is used once, at the end, to report final performance.</p>
-<div id="753150c5" class="cell" data-execution_count="1">
+<div id="e2c9e592" class="cell" data-execution_count="1">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
@@ -2503,19 +2503,19 @@ window.Quarto = {
 <div class="cell-output cell-output-stdout">
 <pre><code>Found ../data/raw/steam_games.parquet; skipping download (use --force-download to refresh).</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="40">
+<div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>reason
 released outside 2018-2022    77287
 Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<div id="b8329603" class="cell" data-execution_count="2">
+<div id="863cf4b6" class="cell" data-execution_count="2">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>train <span class="op">=</span> pd.read_csv(processed_dir <span class="op">/</span> <span class="st">&quot;train.csv&quot;</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>train.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="41">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>(37487, 9)</code></pre>
 </div>
 </div>
@@ -2523,7 +2523,7 @@ Name: count, dtype: int64</code></pre>
 <section id="target-variable" class="level2">
 <h2 class="anchored" data-anchor-id="target-variable">Target variable</h2>
 <p>We predict <code>log1p(total_reviews)</code>, the log of reviews + 1. Logarithmically transforming prevents the few very popular games from dominating the model. Adding 1 to the value keeps games with zero reviews defined.</p>
-<div id="74a5084d" class="cell" data-execution_count="3">
+<div id="e409065c" class="cell" data-execution_count="3">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -2545,7 +2545,7 @@ Name: count, dtype: int64</code></pre>
 <p><code>appID</code> and <code>name</code> are identifiers and are not used as features.</p>
 <section id="transformation" class="level3">
 <h3 class="anchored" data-anchor-id="transformation">Transformation</h3>
-<div id="96a1196b" class="cell" data-execution_count="4">
+<div id="0c29ec25" class="cell" data-execution_count="4">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform the data to fit contract. Clip number of languages to a max of 10, and calculate release day.</span></span>
@@ -2556,7 +2556,7 @@ Name: count, dtype: int64</code></pre>
 </section>
 <section id="preprocessing" class="level3">
 <h3 class="anchored" data-anchor-id="preprocessing">Preprocessing</h3>
-<div id="0f9e6457" class="cell" data-execution_count="5">
+<div id="f85c8611" class="cell" data-execution_count="5">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
@@ -2585,7 +2585,7 @@ Name: count, dtype: int64</code></pre>
 <p>We fit a linear regression, with the preprocessing and model combined in one pipeline. We compare it to a baseline that always predicts the mean.</p>
 <p>Both models are scored with 5-fold cross-validation on the training set. Because preprocessing is inside the pipeline, it is re-fit on each fold, so the validation data never influences it.</p>
 <p>Our main metric is Root Mean Square Error (RMSE) on the <code>log1p</code> scale, which measures relative error so that a few very popular games do not dominate. We also report Mean Absolute Error (MAE) and R².</p>
-<div id="86875f5d" class="cell" data-execution_count="6">
+<div id="b42a28d2" class="cell" data-execution_count="6">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyRegressor</span>
@@ -2634,7 +2634,7 @@ Name: count, dtype: int64</code></pre>
 Table 1: Descriptive statistics of the training dataset
 </figcaption>
 <div aria-describedby="tbl-training-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output cell-output-display" data-execution_count="46">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -2749,7 +2749,7 @@ Figure 2: Median total reviews by the number of supported languages. The sample
 <section id="model-performance" class="level2">
 <h2 class="anchored" data-anchor-id="model-performance">Model performance</h2>
 <p>After cross-validation, we fit the linear regression on the full training set and scored it once on the test set.</p>
-<div id="47940893" class="cell" data-execution_count="10">
+<div id="ddf3f0ad" class="cell" data-execution_count="10">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> root_mean_squared_error, mean_absolute_error, r2_score</span>
@@ -2792,7 +2792,7 @@ Figure 2: Median total reviews by the number of supported languages. The sample
 Table 2: Cross-validation and test-set performance of the baseline and linear regression models
 </figcaption>
 <div aria-describedby="tbl-performance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output cell-output-display" data-execution_count="50">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 
 
@@ -2856,7 +2856,7 @@ Table 2: Cross-validation and test-set performance of the baseline and linear r
 <h2 class="anchored" data-anchor-id="prediction-accuracy-by-game-popularity">Prediction accuracy by game popularity</h2>
 <section id="visualization-code" class="level3">
 <h3 class="anchored" data-anchor-id="visualization-code">Visualization Code:</h3>
-<div id="01d70cd7" class="cell" data-execution_count="12">
+<div id="45a4a9a4" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> altair <span class="im">as</span> alt</span>
@@ -2958,27 +2958,27 @@ Table 2: Cross-validation and test-set performance of the baseline and linear r
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fig_groups</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div id="fig-prediction-accuracy" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="52">
+<div id="fig-prediction-accuracy" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="13">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-prediction-accuracy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 
 <style>
-#altair-viz-5a9b112fb88d461bbb010747f06f4ccc.vega-embed {
+#altair-viz-c87072b15d2e4727898cfed820bb52fc.vega-embed {
 width: 100%;
 display: flex;
 }
-#altair-viz-5a9b112fb88d461bbb010747f06f4ccc.vega-embed details,
-#altair-viz-5a9b112fb88d461bbb010747f06f4ccc.vega-embed details summary {
+#altair-viz-c87072b15d2e4727898cfed820bb52fc.vega-embed details,
+#altair-viz-c87072b15d2e4727898cfed820bb52fc.vega-embed details summary {
 position: relative;
 }
 </style>
-<div id="altair-viz-5a9b112fb88d461bbb010747f06f4ccc"></div>
+<div id="altair-viz-c87072b15d2e4727898cfed820bb52fc"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-5a9b112fb88d461bbb010747f06f4ccc") {
-      outputDiv = document.getElementById("altair-viz-5a9b112fb88d461bbb010747f06f4ccc");
+    if (outputDiv.id !== "altair-viz-c87072b15d2e4727898cfed820bb52fc") {
+      outputDiv = document.getElementById("altair-viz-c87072b15d2e4727898cfed820bb52fc");
     }
 
     const paths = {
