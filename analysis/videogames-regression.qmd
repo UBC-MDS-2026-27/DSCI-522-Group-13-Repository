@@ -308,13 +308,14 @@ error_factor = np.exp(test_lr["MAE"])  # MAE on the log scale -> multiplicative 
 
 ```{python}
 #| label: tbl-performance
+#| tbl-cap: "Cross-validation and test-set performance of the baseline and linear regression models"
 pd.concat(
     {"Cross-validation": cv_results, "Test set": test_results},
     names=["Evaluated on", "Model"],
 ) + 0.0  # turns the baseline's rounded R² of -0.000 into 0.000
 ```
 
-Linear regression beats the mean baseline on every metric (@tbl-performance). In cross-validation it lowers RMSE from `{python} f"{cv_base['RMSE']:.2f}"` to `{python} f"{cv_lr['RMSE']:.2f}"` and explains `{python} f"{cv_lr['R²']:.0%}"` of the variance in log reviews, while the baseline explains none. The improvements are their but the model only explains some of the variance. The features Price, number of languages, release day, genres and categories together account for about a third of the variation in how many reviews a game gets. This indicates that there are features out there that explain more of that variance that was not trained in the model. 
+Linear regression beats the mean baseline on every metric (@tbl-performance). In cross-validation it lowers RMSE from `{python} f"{cv_base['RMSE']:.2f}"` to `{python} f"{cv_lr['RMSE']:.2f}"` and explains `{python} f"{cv_lr['R²']:.0%}"` of the variance in log reviews, while the baseline explains none. The improvements are there but the model only explains some of the variance. The features Price, number of languages, release day, genres and categories together account for about a third of the variation in how many reviews a game gets. This indicates that there are features out there that explain more of that variance that was not trained in the model. 
 
 The gap between the training validation is very close together (RMSE `{python} f"{test_lr['RMSE']:.2f}"` vs `{python} f"{cv_lr['RMSE']:.2f}"`; R² `{python} f"{test_lr['R²']:.2f}"` vs `{python} f"{cv_lr['R²']:.2f}"`). This means the model is not overfitting and should perform about as well on other Steam games released in 2018 - 2022. In practical terms, the test MAE is `{python} f"{test_lr['MAE']:.2f}"` on the log scale. Because the model predicts $\log(1 + y)$, a gap of $d$ between the actual count $y$ and the predicted count $\hat{y}$ on the log scale is a ratio of $e^{d}$ on the original scale:
 
@@ -429,18 +430,7 @@ fig_groups = (panel_a | panel_b).resolve_scale(y="shared")
 ```{python}
 #| label: fig-prediction-accuracy
 #| fig-cap: "Predicted versus actual review counts for test-set games. (A) Every test game, with the dashed line marking perfect prediction and grey lines marking group boundaries. (B) Median actual and predicted review counts within each group of actual reviews; vertical bars show the middle 50% of predictions."
-#| echo: false
-import io
-
-from IPython.display import display
-
-# Send two versions of the chart: the HTML report shows the interactive one,
-# and the PDF report shows the PNG image (PDF cannot show interactive charts).
-png = io.BytesIO()
-fig_groups.save(png, format="png", scale_factor=2)  # needs the vl-convert-python package
-bundle = dict(fig_groups._repr_mimebundle_())
-bundle["image/png"] = png.getvalue()
-display(bundle, raw=True)
+fig_groups
 ```
 
 @fig-prediction-accuracy compares predicted and actual review counts for the `{python} f"{len(test):,}"` test games in two ways. Panel A plots every game. If the model were perfect, every point would sit on the dashed line. The cloud is clearly flatter than the line, but it is hard to read beyond that. With this many games the points overlap heavily. Review counts are also whole numbers, so games with few reviews pile up in vertical stripes at 0, 1, 2 and so on. From panel A alone it is hard to tell where most games lie or what a typical prediction looks like at a given level of popularity.
