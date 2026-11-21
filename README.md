@@ -36,7 +36,7 @@ cd DSCI-522-Group-13-Repository
 ### 2. Set up the computational environment
 
 ```bash
-uv sync
+uv sync --locked
 ```
 
 ### 3. Render the report
