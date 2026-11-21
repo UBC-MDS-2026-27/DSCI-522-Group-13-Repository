@@ -39,28 +39,16 @@ cd DSCI-522-Group-13-Repository
 uv sync
 ```
 
-### 3. Download the data and run the analysis
-
-Run these in order:
+### 3. Render the report
 
 ```bash
-uv run python scripts/process_data.py
-uv run python scripts/eda_summary.py
-uv run python scripts/eda_visualizations.py
+uv run quarto render analysis/videogames-regression.qmd --to html
 ```
 
-The first script downloads the dataset (about 190 MB) from Hugging Face to `data/raw/` and writes the cleaned and split data to `data/processed/`.
-If the dataset is already downloaded, it skips the download.
+Rendering runs all the code in the report: it downloads the dataset (about 190 MB) from Hugging Face to `data/raw/`, skipping the download if it is already there, then writes the cleaned and split data to `data/processed/`.
+It then fits the regression, cross-validates it, and scores it on the test set.
 
-### 4. Render the report
-
-```bash
-uv run quarto render analysis/videogames-regression.qmd
-```
-
-Rendering runs the model code in the report: it fits the regression, cross-validates it, and scores it on the test set.
-
-### 5. View the report
+### 4. View the report
 
 The report is rendered to `analysis/videogames-regression.html`:
 
