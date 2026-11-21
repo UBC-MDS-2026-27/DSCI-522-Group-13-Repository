@@ -29,8 +29,8 @@ Run every command from the root of the repository.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-13-Repository
-cd DSCI-522-Group-13-Repository
+git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-13-Steam-Game-popularity-analysis.git
+cd DSCI-522-Group-13-Steam-Game-popularity-analysis
 ```
 
 ### 2. Set up the computational environment
