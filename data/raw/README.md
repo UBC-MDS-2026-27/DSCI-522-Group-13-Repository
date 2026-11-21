@@ -1,1 +1,1 @@
-The data goes here
+The dataset at https://huggingface.co/datasets/FronkonGames/steam-games-dataset is too large to fit into the git repo so the data prep script downloads it and then saves the processed data into the processed folder.
