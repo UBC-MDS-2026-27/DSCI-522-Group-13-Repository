@@ -25,7 +25,18 @@ The full analysis, including exploratory data analysis, model development, and e
 
 The project uses Docker to provide a consistent and reproducible environment. The analysis runs inside a Docker container, so you do not need to install Python packages or Quarto locally.
 
-### 1. Set up an SSH key
+## Setup
+
+### 1. Clone the repository
+
+Clone the project repository and navigate to the project directory:
+
+```bash
+git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-13-Steam-Game-popularity-analysis.git
+cd DSCI-522-Group-13-Steam-Game-popularity-analysis
+```
+
+### 2. Set up an SSH key
 
 Before downloading the Docker image, make sure you have an SSH key on your computer. If you do not already have one, open a terminal and run:
 
@@ -37,7 +48,7 @@ Press Enter at each prompt to accept the default settings.
 
 If you skip this step, Docker may create a directory named `~/.ssh/id_ed25519.pub` instead of using an existing public key. This can cause SSH connection problems. If this happens, delete the incorrectly created directory and generate the SSH key using the command above.
 
-### 2. Download the Docker image
+### 3. Download the Docker image
 
 From the repository directory, download the project environment:
 
@@ -45,7 +56,7 @@ From the repository directory, download the project environment:
 docker compose pull
 ```
 
-### 3. Render the analysis report
+### 4. Render the analysis report
 
 Run the following command from the repository directory to render the Quarto report inside the Docker container:
 
