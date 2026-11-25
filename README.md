@@ -4,92 +4,86 @@
 
 - Howard Song
 - Milan Bertolutti
-- Yuanchen Ling	
-- Maryamalsadat Hosseini	
+- Yuanchen Ling
+- Maryamalsadat Hosseini
 
-## Summary
+## About
 
+This project investigates how well selected video game characteristics can predict the total number of reviews received by Steam games released between 2018 and 2022. The analysis uses the Steam Games Dataset published by FronkonGames on Hugging Face.
 
-How well do game characteristics predict the total number of reviews for Steam games released 2018–2022? 
+The project explores the relationships between review counts and game characteristics, including price, genres, Steam categories, supported languages, and release date. A linear regression model is developed and evaluated against a mean baseline to assess its predictive performance.
 
-We aimed to answer this question using the [FronkonGames steam games dataset](https://huggingface.co/datasets/FronkonGames/steam-games-dataset) to train a linear regression model using the features price, genre, category, language count and release date, compared against a mean baseline. Our trained model explains about one-third of the variance in log review counts on the test set and beats the mean baseline. This shows that game metadata carries useful predictive signal for developers/publishers, but it is predictive, not causal. One limitation of our model is that it is less accurate at very low and very high review counts. Features such as marketing, developer reputation, and community engagement are not taken into account within our model.
+The results show that the linear regression model explains approximately one-third of the variation in log review counts on the test set and performs better than the mean baseline in cross-validation. However, the model is less accurate for games with very low or very high review counts. Since factors such as marketing activities, developer reputation, and community engagement are not included, the findings should be interpreted as predictive rather than causal.
 
+## Report
 
-## How to run the analysis
+The full analysis, including exploratory data analysis, model development, and evaluation, is available in the published report:
 
-These instructions were tested on macOS.
-Run every command from the root of the repository.
+[View the Steam Games Analysis Report](https://ubc-mds-2026-27.github.io/DSCI-522-Group-13-Steam-Game-popularity-analysis/)
 
-### Prerequisites
+## Usage
 
-- [Git](https://git-scm.com/downloads)
-- [uv](https://docs.astral.sh/uv/getting-started/installation/) (installs Python 3.14 for you)
-- [Quarto](https://quarto.org/docs/get-started/) 1.10 or later
+The project uses Docker to provide a consistent and reproducible environment. The analysis runs inside a Docker container, so you do not need to install Python packages or Quarto locally.
 
-### 1. Clone the repository
+### 1. Set up an SSH key
 
-```bash
-git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Group-13-Steam-Game-popularity-analysis.git
-cd DSCI-522-Group-13-Steam-Game-popularity-analysis
-```
-
-### 2. Set up the computational environment
+Before downloading the Docker image, make sure you have an SSH key on your computer. If you do not already have one, open a terminal and run:
 
 ```bash
-uv sync --locked
+ssh-keygen -t ed25519
 ```
 
-### 3. Render the report
+Press Enter at each prompt to accept the default settings.
+
+If you skip this step, Docker may create a directory named `~/.ssh/id_ed25519.pub` instead of using an existing public key. This can cause SSH connection problems. If this happens, delete the incorrectly created directory and generate the SSH key using the command above.
+
+### 2. Download the Docker image
+
+From the repository directory, download the project environment:
 
 ```bash
-uv run quarto render analysis/videogames-regression.qmd --to html
+docker compose pull
 ```
 
-Rendering runs all the code in the report: it downloads the dataset (about 190 MB) from Hugging Face to `data/raw/`, skipping the download if it is already there, then writes the cleaned and split data to `data/processed/`.
-It then fits the regression, cross-validates it, and scores it on the test set.
+### 3. Render the analysis report
 
-### 4. View the report
-
-The report is rendered to `analysis/videogames-regression.html`:
+Run the following command from the repository directory to render the Quarto report inside the Docker container:
 
 ```bash
-open analysis/videogames-regression.html    # macOS
-start analysis/videogames-regression.html   # Windows
+docker compose run --rm analysis-env uv run quarto render analysis/videogames-regression.qmd
 ```
+
+The `--rm` option automatically removes the temporary container after the rendering command finishes.
+
+## Contributing
+
+If you would like to contribute to this project, please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on setting up the development environment, working with the Docker container, updating dependencies, reproducing the analysis, and publishing the report.
 
 ## Dependencies
 
-- [uv](https://docs.astral.sh/uv/) 0.12 or later
-- Python 3.14 (set in [`.python-version`](.python-version), installed by uv)
-- [Quarto](https://quarto.org/) 1.10 or later
-- Python packages listed in [`pyproject.toml`](pyproject.toml), with exact versions pinned in [`uv.lock`](uv.lock)
+The project environment is managed using Docker and includes the tools and packages required to reproduce the analysis.
+
+The main tools used in the project include:
+
+- **Python:** The project uses the Python version specified in `.python-version`.
+- **uv:** Manages Python dependencies using `pyproject.toml` and `uv.lock`.
+- **Quarto:** Renders the analysis report.
+- **Docker:** Provides a consistent environment for running the project.
+
+The exact Python package versions are managed through the project's dependency files to support reproducibility.
+
+## AI Usage Statement
+
+Generative AI tools, including Claude (Opus 5.5), were used throughout this project as an assistant rather than a guide: for debugging, documentation, code explanations, and brainstorming.
+
+## References
+
+FronkonGames. (n.d.). *Steam Games Dataset* [Data set]. Hugging Face. [https://doi.org/10.57967/hf/0511](https://doi.org/10.57967/hf/0511)
+
+Valve. (n.d.). User reviews. *Steamworks Documentation*. [https://partner.steamgames.com/doc/store/reviews](https://partner.steamgames.com/doc/store/reviews)
 
 ## License
 
-- Code: MIT License
-- Report: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)
+The code in this repository is licensed under the MIT License. The analysis report is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0). The dataset remains subject to its original source license.
 
-The data is not covered by either license and remains under the license of its original source.
-See [`LICENSE.md`](LICENSE.md) for the full terms.
-
-## AI use statement
-
-Generative AI tools, including Claude (Opus 5.5), were used throughout this project as an assistant rather than a guide: for debugging, documentation, code explanations, and brainstorming.
-We used it to help write and debug code,
-to review our work against the milestone requirements, to explain code and errors, and to propose edits to documentation.
-Every AI-assisted change was read, tested and understood by a team member, then reviewed and merged by a human teammate,
-following the AI usage policy in [`CONTRIBUTING.md`](CONTRIBUTING.md#ai-usage-policy).
-Substantial AI contributions are also noted in the code where they appear,
-for example in [`analysis/videogames-regression.qmd`](analysis/videogames-regression.qmd).
-
-Instruction files: none are committed to this repository.
-
-Example prompts:
-
-- Verify the model training pipeline I have written for any issues. Does it align with the outlined question and data contract?
-- Verify that my implementation of a log1p() and other transformation is correct here.
-- I am having some trouble formatting this expression into LaTeX, correct the equation.
-
-## Rendered report
-
-https://ubc-mds-2026-27.github.io/DSCI-522-Group-13-Steam-Game-popularity-analysis/
+For more information, see [LICENSE.md](LICENSE.md).

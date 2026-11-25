@@ -177,7 +177,7 @@ Make sure you use the image tag specified in the updated `docker-compose.yml` fi
 To rerun the analysis, open a terminal in the project directory and execute:
 
 ```bash
-docker compose run --rm analysis-env uv run quarto render
+docker docker compose run --rm analysis-env uv run quarto render analysis/videogames-regression.qmd
 ```
 
 The `--rm` option automatically removes the temporary container after the command finishes.
@@ -188,7 +188,33 @@ For an R-only document, use:
 docker compose run --rm analysis-env quarto render
 ```
 
-If necessary, specify the Quarto source file after `quarto render`.
+### Publishing the Report on GitHub Pages
+
+After reproducing the analysis and rendering the Quarto report, contributors can publish the updated report on GitHub Pages.
+
+The Quarto report is configured with `embed-resources: true`, which embeds the required resources into the HTML file and makes it self-contained.
+
+From the repository root, copy the rendered HTML report to the `docs` directory as `index.html`:
+
+```bash
+mkdir -p docs
+cp analysis/videogames-regression.html docs/index.html
+touch docs/.nojekyll
+```
+
+Commit and push the updated report:
+
+```bash
+git add docs/index.html docs/.nojekyll
+git commit -m "Update published analysis report"
+git push
+```
+
+The report is published through GitHub Pages and can be accessed at:
+
+https://ubc-mds-2026-27.github.io/DSCI-522-Group-13-Steam-Game-popularity-analysis/
+
+Whenever the report is updated, repeat these steps to keep the published version up to date.
 
 ## Data and Reproducibility
 
