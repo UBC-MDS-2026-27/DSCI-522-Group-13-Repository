@@ -25,6 +25,15 @@ The full analysis, including exploratory data analysis, model development, and e
 
 The project uses Docker to provide a consistent and reproducible environment. The analysis runs inside a Docker container, so you do not need to install Python packages or Quarto locally.
 
+## Prerequisites
+
+Before getting started, make sure you have the following installed:
+
+- **Git** – to clone the project repository.
+- **Docker Desktop** – to download and run the project container.
+
+The project dependencies, Python environment, and Quarto are already configured inside the Docker image. You do not need to install Python or Quarto locally.
+
 ## Setup
 
 ### 1. Clone the repository
@@ -55,6 +64,7 @@ From the repository directory, download the project environment:
 ```bash
 docker compose pull
 ```
+The Docker image is approximately 190 MB. The initial download may take a few minutes depending on your internet connection.
 
 ### 4. Render the analysis report
 
@@ -63,8 +73,8 @@ Run the following command from the repository directory to render the Quarto rep
 ```bash
 docker compose run --rm analysis-env uv run quarto render analysis/videogames-regression.qmd
 ```
-
-The `--rm` option automatically removes the temporary container after the rendering command finishes.
+The rendered HTML report will be saved at `analysis/videogames-regression.html`.
+The `--rm` option automatically removes the temporary container after the rendering command finishes. If you start the container in the background using `docker compose up -d`, stop and remove it when you finish by running `docker compose down`.
 
 ## Contributing
 

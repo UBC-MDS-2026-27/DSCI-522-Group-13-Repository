@@ -45,6 +45,7 @@ git config --global user.email "you@example.com"
 ```
 
 The Docker Compose configuration mounts your Git configuration into the container, allowing commits made inside the container to use your Git identity.
+Make sure that ~/.gitconfig exists as a file, not as a directory. If Docker creates a directory at this path because the Git configuration file does not exist, remove the incorrectly created directory, configure your Git name and email using the commands above, and restart the container.
 
 ### Starting a work session
 
@@ -111,17 +112,7 @@ docker compose down
 
 ### SSH key not found
 
-If Docker cannot find `~/.ssh/id_ed25519.pub`, first check whether the file exists.
-
-If you do not have an SSH key, create one by running:
-
-```bash
-ssh-keygen -t ed25519
-```
-
-Press Enter at each prompt to accept the default settings.
-
-If Docker has created a directory named `id_ed25519.pub` instead of finding the public key file, remove the incorrectly created directory and generate the SSH key again.
+The project requires an Ed25519 public SSH key at `~/.ssh/id_ed25519.pub`. Follow the SSH key setup and troubleshooting steps in the [README](README.md) if the key is missing or if Docker created a directory at `~/.ssh/id_ed25519.pub`.
 
 ### Git configuration file issue
 
@@ -145,7 +136,7 @@ If another application is using port 2222, stop that application or change the h
 
 If GitHub asks you to authenticate when pushing changes, follow the authentication instructions provided by GitHub. Do not store passwords or access tokens in project files.
 
-## Adding or Updating Packages
+### Adding or Updating Packages
 
 If you need an additional Python package, first create or switch to a feature branch and connect to the running container. Then, use `uv add` to install the package and update the project's dependency files:
 
@@ -159,34 +150,38 @@ To specify a particular version, use:
 uv add package-name==1.2.3
 ```
 
-After adding the package, commit both updated dependency files, `pyproject.toml` and `uv.lock`, to ensure that the project environment remains reproducible.
+After adding the package, commit both updated dependency files, pyproject.toml and uv.lock, to ensure that the project environment remains reproducible.
 
-Next, push your branch and open a Pull Request. After the changes are merged into `main`, the GitHub Actions workflow builds and publishes an updated Docker image.
+Next, push your branch to GitHub. The GitHub Actions workflow runs when a push to any branch changes the Dockerfile, dependency files, or workflow file, building and publishing a new Docker image and committing the updated image tag in docker-compose.yml back to that branch.
 
-Before starting a new work session, open a terminal in your local project directory and pull the latest repository changes and Docker image:
+Once the workflow completes on your branch, pull the updated repository changes and Docker image by running the following commands:
+
+```bash
+git pull
+docker compose pull
+```
+Make sure you use the image tag specified in the updated docker-compose.yml file. This ensures that your local environment uses the updated Docker image with the new dependencies.
+
+Then, submit a Pull Request and have it reviewed and merged into main. If merging into main updates the relevant files on main and runs the workflow there as well, switch to main after the workflow completes and run:
 
 ```bash
 git pull
 docker compose pull
 ```
 
-Make sure you use the image tag specified in the updated `docker-compose.yml` file. This ensures that your local environment uses the latest Docker image with the updated dependencies.
+This ensures that the project environment on `main` uses the latest published Docker image.
 
 ## Reproducing the Analysis
 
 To rerun the analysis, open a terminal in the project directory and execute:
 
 ```bash
-docker docker compose run --rm analysis-env uv run quarto render analysis/videogames-regression.qmd
+docker compose run --rm analysis-env uv run quarto render analysis/videogames-regression.qmd
 ```
+
+The rendered HTML report will be saved at `analysis/videogames-regression.html`.
 
 The `--rm` option automatically removes the temporary container after the command finishes.
-
-For an R-only document, use:
-
-```bash
-docker compose run --rm analysis-env quarto render
-```
 
 ### Publishing the Report on GitHub Pages
 
@@ -201,7 +196,6 @@ mkdir -p docs
 cp analysis/videogames-regression.html docs/index.html
 touch docs/.nojekyll
 ```
-
 Commit and push the updated report:
 
 ```bash
@@ -214,13 +208,13 @@ The report is published through GitHub Pages and can be accessed at:
 
 https://ubc-mds-2026-27.github.io/DSCI-522-Group-13-Steam-Game-popularity-analysis/
 
-Whenever the report is updated, repeat these steps to keep the published version up to date.
+Whenever you update the analysis and re-render the report, repeat these steps and commit and push the updated docs/ files so the published report on GitHub Pages stays current.
 
 ## Data and Reproducibility
 
 All downloaded raw data should be stored in `data/raw/`, while cleaned datasets should be stored in `data/processed/`.
 
-The analysis uses a cleaned dataset of 46,859 Steam games released between 2018 and 2022. The dataset is randomly split into training (80%) and test (20%) sets using seed 1234. The training set is used for exploratory data analysis, model development, and model selection, while the test set is reserved for final model evaluation.
+The analysis uses a cleaned dataset of 46,859 Steam games released between 2018 and 2022. The dataset is randomly split into training (80%) and test (20%) sets using seed 1234. The training set is used for exploratory data analysis, model development, and model selection, while the test set is reserved for final model evaluation. All preprocessing transformations must be fitted using only the training data and then applied to the test data to prevent data leakage.
 
 Document the steps required to reproduce the analysis and avoid committing large data files that exceed GitHub's file-size limits.
 
@@ -233,6 +227,7 @@ Keep changes focused on one task and use meaningful commit messages. Before subm
 Push your branch to GitHub and open a Pull Request into `main`. Describe your changes, link any relevant GitHub Issues, and request a review from at least one teammate before merging.
 
 The reviewer should merge the Pull Request after approval. Contributors should not push directly to `main`.
+All contributors are expected to participate in the project's collaboration process by opening, reviewing, and contributing to the resolution of GitHub Issues and Pull Requests. Every change should be submitted through a Pull Request and reviewed by at least one teammate before being merged.
 
 Python code should follow the PEP 8 style guide.
 
