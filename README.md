@@ -56,6 +56,7 @@ ssh-keygen -t ed25519
 Press Enter at each prompt to accept the default settings.
 
 If you skip this step, Docker may create a directory named `~/.ssh/id_ed25519.pub` instead of using an existing public key. This can cause SSH connection problems. If this happens, delete the incorrectly created directory and generate the SSH key using the command above.
+Make sure `~/.gitconfig` exists as a file on your machine (and your Git name and email are configured) before starting the container, or Docker may create a directory at that path.
 
 ### 3. Download the Docker image
 
