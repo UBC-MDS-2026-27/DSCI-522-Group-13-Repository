@@ -23,7 +23,7 @@ The full analysis, including exploratory data analysis, model development, and e
 
 ## Usage
 
-The project uses Docker to provide a consistent and reproducible environment. The analysis runs inside a Docker container, so you do not need to install Python packages or Quarto locally.
+The project uses Docker to provide a consistent and reproducible environment. The analysis runs inside a Docker container, so you do not need to install Python packages or Quarto locally. The image is published on Docker Hub at [milanbert/dsci-522-group-13-steam-game-popularity-analysis](https://hub.docker.com/r/milanbert/dsci-522-group-13-steam-game-popularity-analysis).
 
 ## Prerequisites
 
@@ -56,7 +56,7 @@ ssh-keygen -t ed25519
 Press Enter at each prompt to accept the default settings.
 
 If you skip this step, Docker may create a directory named `~/.ssh/id_ed25519.pub` instead of using an existing public key. This can cause SSH connection problems. If this happens, delete the incorrectly created directory and generate the SSH key using the command above.
-Make sure `~/.gitconfig` exists as a file on your machine (and your Git name and email are configured) before starting the container, or Docker may create a directory at that path.
+Make sure `~/.gitconfig` exists as a file on your machine (and your Git name and email are configured) before starting the container, or Docker may create a directory at that path. Even though rendering the report does not use SSH directly, the `analysis-env` service in `docker-compose.yml` mounts both `~/.ssh/id_ed25519.pub` and `~/.gitconfig`, so both files must exist on your machine before running the container.
 
 ### 3. Download the Docker image
 
@@ -74,6 +74,8 @@ Run the following command from the repository directory to render the Quarto rep
 ```bash
 docker compose run --rm analysis-env uv run quarto render analysis/videogames-regression.qmd
 ```
+
+On the first run, rendering downloads the raw dataset from Hugging Face (so an internet connection is required) and saves local data files; raw data files are ignored by Git.
 The rendered HTML report will be saved at `analysis/videogames-regression.html`.
 The `--rm` option automatically removes the temporary container after the rendering command finishes. If you start the container in the background using `docker compose up -d`, stop and remove it when you finish by running `docker compose down`.
 
