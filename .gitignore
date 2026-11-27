@@ -14,3 +14,4 @@ __pycache__/
 analysis/*.aux
 analysis/*.log
 analysis/*.tex
+.ipynb_checkpoints/
